@@ -2,7 +2,7 @@
 #
 #	cifrado y descifrado de mensajes y archivos
 #	creacion de esteganografías y mensajes cifrados en QR
-#	bufandarosa - versión 0.1.1
+#	bufandarosa - versión 0.1.2 (exos)
 #
 
 # --------------------------- funciones ---------------------------------
@@ -33,22 +33,22 @@ function nombre {
 }
 function pastie {
 	[ "$1" == "-h" ]&& echo 'envia un mensaje a un pastie al azar usando tor, ejemplo: `echo "hola" | pastie`' && exit
+	sleep 5 | progreso &&
 	f=`mktemp`
 	cat /dev/stdin > $f
-	proxychains wgetpaste -g -v -r \
-	-n "`nombre`" \
-	-s `echo "bpaste ca codepad dpaste gists poundpython" | uno` \
-	$f | grep -o "https\?://[^\"']\+" | sed 's/[<|\ ].*$//g' | sort -u | progreso
+	proxychains wgetpaste -g -v -r -n "`nombre`" \
+	-s `echo "bpaste codepad dpaste gists poundpython" | uno` \
+	$f | grep -o "https\?://[^\"']\+" | head -n 1
 	borrar $f
 }
 function cifrar {
 	[ "$1" == "-h" ]&& echo 'cifra mensajes, ejmplo `echo "hola" | cifrar clave`' && exit
-	cat /dev/stdin | mcrypt -u -k "$1" -F 2> /dev/null | base64 $2
+	cat /dev/stdin | base64 | gpg -c --passphrase "$1" 2> /dev/null | base64 $2
 }
 function descifrar {
 	[ "$1" == "-h" ]&& echo 'descifra mensajes, ejmplo `echo "hola" | cifrar clave | descifrar clave`' && exit
 	cat /dev/stdin | tr "\n" " " | sed -e :a -e 's/<[^>]*>//g;/</N;//ba' \
-	| sed 's/[^0-9A-Za-z=\/+-]//g' | base64 -d | mdecrypt - -k "$1" -F 2> /dev/null
+	| sed 's/[^0-9A-Za-z=\/+-]//g' | base64 -d | gpg -d --passphrase "$1" 2> /dev/null
 }
 function desesteganografia {
 	[ "$1" == "-h" ]&& echo 'muestra el mensaje dentro de una archivo o un QR, ejemplo desesteganografia clave imagen`' && exit
@@ -132,7 +132,6 @@ while getopts c:hiu OPCION; do
 		fi
 		echo "$aptitude imagemagick
 		$aptitude steghide
-		$aptitude mcrypt
 		$aptitude zenity
 		$aptitude tor
 		$aptitude xsel
@@ -180,7 +179,7 @@ function clave {
 	zenity --title "Clave" --text "Introducir la clave" --entry --entry-text="$*"
 }
 function url {
-	zenity --title "URL" --text "Dirección" --entry --entry-text="$*" || exit
+	zenity --title "URL" --text "Dirección" --entry --entry-text="$*"
 }
 function archivo {
 	zenity --title "Elije el archivo" --file-selection
@@ -190,8 +189,7 @@ function archivos {
 	|| error "si necesita un archivo" && exit)"
 }
 function mensaje {
-	zenity --title "Mensaje" --text="Escribe el mensaje" --width=450 --height=350 --text-info --editable \
-	|| error "si necesita un mensaje" && exit
+	zenity --title "Mensaje" --text="Escribe el mensaje" --width=450 --height=350 --text-info --editable
 }
 function mostrar {
 	# mensaje de entrada
@@ -205,7 +203,6 @@ function mostrar {
 }
 function progreso {
 	zenity  --progress --pulsate --auto-close --auto-kill --no-cancel
-	cat /dev/stdin
 }
 
 # -------------------------- programa ----------------------------------
@@ -302,8 +299,8 @@ case $MENU in
 	case $MENU in
 		0 )
 			# texto
-			t=`mensaje` || exit
-			p=`clave`
+			sf=`mktemp`
+			mensaje > $sf
 		;;
 		1 )
 			# archivo
@@ -328,7 +325,7 @@ case $MENU in
 	# descifrado generico
 	p=`clave`
 	echo "`desesteganografia "$p" $sf || cat $sf | descifrar "$p"`" | mostrar
-	borrar $sf
+	borrar $sf 2> /dev/null
 
 	;;
 	2 )
