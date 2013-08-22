@@ -12,6 +12,12 @@ if [ "$1" == "-h" ]; then
 	exit
 fi
 
+function uno {
+	# elije uno al azar de una lista
+        LISTA="`cat /dev/stdin | tr ' ' "\n"`"
+        N=`echo "$LISTA" | wc -l`
+        echo "$LISTA" | sed -n $[$RANDOM%$N+1]p
+}
 function opciones {
 	while getopts t:m: OPCION
 	do
@@ -44,8 +50,10 @@ function nombre {
 function pastie {
 	f=`mktemp`
 	cat /dev/stdin > $f
-	PASTIE=`echo "bpaste ca codepad dpaste gists poundpython" | sed 's/\ /\n/g'| uno`
-	proxychains wgetpaste -g -r -n nombre -s $PASTIE $f | sed -n '2p' | sed 's/^.*:\ //'
+	proxychains wgetpaste -g -v -r \
+	-n "`nombre`" \
+	-s `echo "bpaste ca codepad dpaste gists poundpython" | uno` \
+	$f | sed -n '2p' | sed 's/^.*:\ //' | progreso
 	borrar $f
 }
 function cifrar {
@@ -63,7 +71,7 @@ function error {
 }
 function descarga {
 	# me gustaria convertir esto en GET
-	#proxychains 
+	#proxychains
 	wget "$1" "$2" -qO -
 }
 function basura {
@@ -98,13 +106,8 @@ function mostrar {
 	echo "$MENSAJE" | xsel -i
 }
 function progreso {
+	cat /dev/stdin
 	zenity  --progress --pulsate --auto-close --auto-kill --no-cancel
-}
-function uno {
-	# elije uno al azar de una lista
-        LISTA="`cat /dev/stdin`"
-        N=`echo "$LISTA" | wc -l`
-        echo "$LISTA" | sed -n $[$RANDOM%$N+1]p
 }
 
 
@@ -249,22 +252,16 @@ case $MENU in
 	MENU=`echo -e "Mensaje Archivo_o_Código_QR Dirección_web" | opciones -t "Descifrar" -m "¿Dónde queres buscar?"` || exit
 	case $MENU in
 		0 )
-			# descifrado
+			# texto
 			t=`mensaje` || exit
-			k=`clave`
-			echo "$t" | descifrar "$k" | mostrar
+			p=`clave`
 		;;
 		1 )
 			# archivo
 			sf=`archivo` || exit
-			# mensaje descifrado en archivo
-			p=`clave`
-			m=`esteganografia "$p" "$sf" || cat "sf" | descifrar "$p"`
-			echo "$m"  | mostrar
 		;;
 		2 )
 			URL=`url` || exit
-			p=`clave`
 			# archivo temporal
 			sf=`mktemp`
 			if [ "$(echo $URL | grep tinyurl)" ]; then
@@ -275,10 +272,12 @@ case $MENU in
 				descarga "$URL" > $sf
 			fi | progreso
 			# mensaje descifrado en archivo
-			echo "`esteganografia "$p" $sf || cat $sf | descifrar "$p"`" | mostrar
-			borrar $sf
 		;;
 	esac
+	# descifrado generico
+	p=`clave`
+	echo "`esteganografia "$p" $sf || cat $sf | descifrar "$p"`" | mostrar
+	borrar $sf
 
 	;;
 	2 )
