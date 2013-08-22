@@ -3,7 +3,7 @@
 Este programa permite **cifrar** y **descifrar** mensaje o archivos para enviarlos por correo electrónico, publicarlo, compartir de modo anónimo. 
 También nos permitirá guardar información de cualquier tipo dentro de una **imagen** o **audio** o generar códigos **QR** con el mensaje cifrado.
 
-![captura del programa](../img/cifrado.png)
+![captura del programa](img/cifrado.png)
 
 ## Instalar
 
@@ -23,7 +23,7 @@ sudo cp wgetpaste /usr/bin/
 
 Linea de comandos para Bufanda Rosa.
 
-![captura del programa](../img/shell.png)
+![captura del programa](img/shell.png)
 
 <pre>
 bufandarosa -c ayuda
