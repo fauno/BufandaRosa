@@ -19,3 +19,13 @@ sudo cp wgetpaste /usr/bin/
 </pre>
 
 
+## Vieja escuela
+
+Linea de comandos para Bufanda Rosa.
+
+![captura del programa](../img/shell.png)
+
+<pre>
+bufandarosa -c ayuda
+</pre>
+
