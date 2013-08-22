@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 #	cifrado y descifrado de mensajes y archivos
-#	bufandarosa - version 0.1
+#	bufandarosa - versión 0.1
 #
 # --------------------------- funciones ---------------------------------
 if [ "$1" == "-h" ]; then
@@ -113,8 +113,8 @@ function uno {
 
 if [ "$1" == "-i" ]; then
 	NOMBRE=`basename $0`
-	#echo "$NOMBRE no esta instalado" | mostrar
-	echo -e "[Desktop Entry]\nName=$NOMBRE\nDescription=No tengo nada que ocultar, pero si mucho que proteger\nIcon=help-faq\nType=Application\nExec=$NOMBRE\nCategories=GTK;Utility;" > /tmp/$NOMBRE.desktop
+	#echo "$NOMBRE no está instalado" | mostrar
+	echo -e "[Desktop Entry]\nName=$NOMBRE\nDescription=No tengo nada que ocultar, pero sí mucho que proteger\nIcon=help-faq\nType=Application\nExec=$NOMBRE\nCategories=GTK;Utility;" > /tmp/$NOMBRE.desktop
 	# dependencias
 	TMP=$(mktemp)
 
@@ -166,7 +166,7 @@ case $MENU in
 		;;
 	esac
 	k=`clave `pwgen -s -y -1 $[$RANDOM%10+6]``
-	MENU=`echo -e "Texto Imagen_o_Audio Imagen_al_azar_de_la_web Publicar_en_TinyURL Publicar_en_Pastie Codigo_QR" | opciones -t "¿En donde?" -m "¿Donde lo queres ocultar?"` || exit
+	MENU=`echo -e "Texto Imágen_o_Audio Imágen_al_azar_de_la_web Publicar_en_TinyURL Publicar_en_Pastie Código_QR" | opciones -t "¿En donde?" -m "¿Donde lo queres ocultar?"` || exit
 	case $MENU in
 		0 )
 		# genera el mensaje y lo muestra en base64
@@ -211,7 +211,7 @@ case $MENU in
 		# genera la imagen con password real
 		echo "$ef" | steghide embed -ef - -p "$k" -cf "$cf"
 		xdg-open "$(pwd)/$cf"
-		echo "$(pwd)/$cf" | mostrar "Imagen con un secreto"
+		echo "$(pwd)/$cf" | mostrar "Imágen con un secreto"
 		;;
 		3 )
 		# publicar en tinyURL con Tor
@@ -222,7 +222,7 @@ case $MENU in
 			# si no se puede genera la tinyurl prueba varias veces
 			u=`descarga "https://tinyurl.com/create.php?url=data:text/html;charset=utf-8;base64,$m" \
 			| grep "'https://tinyurl.com/" | head -n 1 | cut -d "'" -f 2`
-			echo "$u" && break || echo "no se genero la tinyURL" | error
+			echo "$u" && break || echo "No se generó la tinyURL" | error
 		done
 		echo "$u" | mostrar
 		;;
@@ -238,7 +238,7 @@ case $MENU in
 			sf=`nombre`.png
 			qrencode -o "$sf" "$(echo "$ef" | cifrar "$k" -w0)" || error "Los QR tienen espacio limitado"
 			metadatos "$sf"
-			echo "$(pwd)/$sf" | mostrar "Codigo QR generado"
+			echo "$(pwd)/$sf" | mostrar "Código QR generado"
 	;;
 	esac
 	;;
@@ -246,7 +246,7 @@ case $MENU in
 	# Descifrar
 
 	# mensaje archivo o URL
-	MENU=`echo -e "Mensaje Archivo_o_Codigo_QR Dirección_web" | opciones -t "Descifrar" -m "¿Donde queres buscar?"` || exit
+	MENU=`echo -e "Mensaje Archivo_o_Código_QR Dirección_web" | opciones -t "Descifrar" -m "¿Dónde queres buscar?"` || exit
 	case $MENU in
 		0 )
 			# descifrado
@@ -302,7 +302,7 @@ case $MENU in
 		done | progreso
 	;;
 	5 )
-		echo -e "# Bufanda Rosa\n_No tengo nada que ocultar, pero si mucho que proteger_\n\n" | mostrar
+		echo -e "# Bufanda Rosa\n_No tengo nada que ocultar, pero sí mucho que proteger_\n\n" | mostrar
 esac
 
 exit
