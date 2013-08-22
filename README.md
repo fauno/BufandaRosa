@@ -29,3 +29,13 @@ Linea de comandos para Bufanda Rosa.
 bufandarosa -c ayuda
 </pre>
 
+
+# Megabot
+
+Un robot web pensado para ser lo mas generico posible.
+
+<pre>
+echo -e "pass 1234\nemail tuemail@mail.com\nstatus mi%20mensaje" | megabot m.facebook.com
+</pre>
+
+_Esto debería enviar un mensaje a "tu" muro de facebutt_
