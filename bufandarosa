@@ -33,17 +33,17 @@ function nombre {
 }
 function pastie {
 	[ "$1" == "-h" ]&& echo 'envia un mensaje a un pastie al azar usando tor, ejemplo: `echo "hola" | pastie`' && exit
-	sleep 5 | progreso &&
 	f=`mktemp`
 	cat /dev/stdin > $f
+	sleep 5 | progreso &&
 	proxychains wgetpaste -g -v -r -n "`nombre`" \
 	-s `echo "bpaste codepad dpaste gists poundpython" | uno` \
-	$f | grep -o "https\?://[^\"']\+" | head -n 1
+	$f | grep -o "https\?://[^\"']\+" | tail -n 1
 	borrar $f
 }
 function cifrar {
 	[ "$1" == "-h" ]&& echo 'cifra mensajes, ejmplo `echo "hola" | cifrar clave`' && exit
-	cat /dev/stdin | gpg -c --passphrase "$1" 2> /dev/null | base64 $2
+	cat /dev/stdin | gpg -c --passphrase "$1" 2> /dev/null | base64 -w20 $2
 }
 function descifrar {
 	[ "$1" == "-h" ]&& echo 'descifra mensajes, ejmplo `echo "hola" | cifrar clave | descifrar clave`' && exit
@@ -202,7 +202,10 @@ function mostrar {
 	echo "$MENSAJE" | xsel -i
 }
 function progreso {
-	zenity  --progress --pulsate --auto-close --auto-kill --no-cancel
+	pid=`mktemp`
+	zenity  --progress --pulsate --auto-close --auto-kill --no-cancel & echo $! > $pid
+	cat /dev/stdin
+	kill `cat $pid`
 }
 
 # -------------------------- programa ----------------------------------
@@ -254,7 +257,7 @@ case $MENU in
 			| grep -o 'http://[^\" ]*' | uno`
 			# directorio de imagenes
 			echo $img_url > /dev/stderr
-			descarga "$img_url" > "$cf"
+			descarga "$img_url" | progreso > "$cf"
 			if [ -f "$cf" ]; then
 				break
 			fi
@@ -275,11 +278,14 @@ case $MENU in
 			# genera el mensaje y lo muestra en base64
 			m=`echo "$ef" | cifrar "$k"  -w0`
 			# si no se puede genera la tinyurl prueba varias veces
-			tinyurl "$m" || tinyurl "$m" || tinyurl "$m" | progreso | mostrar || error "No se generó la tinyURL"
+			u=`tinyurl "$m" | progreso || tinyurl "$m" | progreso || tinyurl "$m" | progreso || error "No se generó la tinyURL"`
+			# muestra el archivo o mensaje cifrado
+			echo $u | mostrar
 		;;
 		4 )
 			# genera el mensaje, lo publica y lo muestra en base64
-			echo "$ef" | cifrar "$k" | pastie | mostrar
+			echo "$ef" | cifrar "$k" | pastie | progreso | mostrar
+			exit
 	   	;;
 		5)
 	                # genera codigo QR
@@ -332,7 +338,7 @@ case $MENU in
 	;;
 	2 )
 		# publicacion anonima
-		mensaje | pastie | mostrar
+		mensaje | pastie | progreso | mostrar
 	;;
 	3 )
 		# Quitar metadatos
@@ -344,9 +350,9 @@ case $MENU in
 	;;
 	4 )
 		# Eliminar archivos de modo seguro
-		archivos | while read ARCHIVO; do
+		archivos || exit | while read ARCHIVO; do
 			# borra el archivo para simpre
-			borrar "$ARCHIVO" | progreso
+			borrar "$ARCHIVO"
 		done | progreso
 	;;
 	5 )
