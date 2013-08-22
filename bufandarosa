@@ -43,7 +43,7 @@ function pastie {
 }
 function cifrar {
 	[ "$1" == "-h" ]&& echo 'cifra mensajes, ejmplo `echo "hola" | cifrar clave`' && exit
-	cat /dev/stdin | base64 | gpg -c --passphrase "$1" 2> /dev/null | base64 $2
+	cat /dev/stdin | gpg -c --passphrase "$1" 2> /dev/null | base64 $2
 }
 function descifrar {
 	[ "$1" == "-h" ]&& echo 'descifra mensajes, ejmplo `echo "hola" | cifrar clave | descifrar clave`' && exit
@@ -299,8 +299,10 @@ case $MENU in
 	case $MENU in
 		0 )
 			# texto
-			sf=`mktemp`
-			mensaje > $sf
+			m=`mensaje`
+			p=`clave`
+			echo "$m" | descifrar "$p" | mostrar
+			exit
 		;;
 		1 )
 			# archivo
