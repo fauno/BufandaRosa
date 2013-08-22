@@ -76,16 +76,28 @@ function ayuda {
 		echo " $N		`$N -h`"
 	done
 }
+function progreso {
+	echo "espere por favor"
+	cat /dev/stdin
+}
 #---------------------- ejecuta linea de comandos -----------------
 
-while getopts c:h OPCION; do
+while getopts c:hiu OPCION; do
         case $OPCION in
 	c)
-		function progreso {
-			echo "espere por favor"
-			cat /dev/stdin
-		}
 		eval ${OPTARG}
+		exit
+	;;
+	u)
+		NOMBRE=`basename $0`
+		REPO="BufandaRosa"
+		cd /tmp
+		# unificar estas dos lineas
+		wget -O master.zip https://github.com/b4zz4/$REPO/archive/master.zip
+		unzip master.zip
+		cd $REPO-master/
+		chmod +x $NOMBRE
+		./$NOMBRE -i && echo "actualizado"
 		exit
 	;;
 	h)
@@ -93,9 +105,48 @@ while getopts c:h OPCION; do
 		echo
 		echo "  -h Esta ayuda"
 		echo "  -i Instalación"
+		echo "  -u actualiza el programa"
 		echo "  -c linea de comandos"
 		echo "  -c 'ayuda' muestra ayuda sobre los comendos"
 		exit
+	;;
+	i)
+		NOMBRE=`basename $0`
+		#echo "$NOMBRE no está instalado" | mostrar
+		echo -e "[Desktop Entry]\nName=$NOMBRE\nDescription=No tengo nada que ocultar, pero sí mucho que proteger\nIcon=help-faq\nType=Application\nExec=$NOMBRE\nCategories=GTK;Utility;" > /tmp/$NOMBRE.desktop
+		# dependencias
+		TMP=$(mktemp)
+
+		# verifica el sistema operativo
+		if [ "$(which yum)" ]; then
+			aptitude="yum -y install"
+		elif [ "$(which pacman)" ]; then
+			aptitude="pacman -S"
+		else
+		aptitude="apt-get -y install"
+		fi
+		if [ "$(which gksu)" ]; then
+			gksu="gksu"
+		else
+			gksu="su -c"
+		fi
+		echo "$aptitude imagemagick
+		$aptitude steghide
+		$aptitude mcrypt
+		$aptitude zenity
+		$aptitude tor
+		$aptitude xsel
+		$aptitude proxychains
+		$aptitude zbar-tools
+		$aptitude qrencode
+		$aptitude wgetpaste
+		cp $NOMBRE /usr/bin/
+		[ ! "$(which wgetpaste)" ] && cp wgetpaste /usr/bin/
+		cp /tmp/$NOMBRE.desktop /usr/share/applications/$NOMBRE.desktop" > $TMP
+		$gksu "bash $TMP"
+		rm $TMP
+		exit
+		;;
 	esac
 done
 
@@ -156,45 +207,6 @@ function progreso {
 	zenity  --progress --pulsate --auto-close --auto-kill --no-cancel
 	cat /dev/stdin
 }
-
-
-#--------------- instalacion -----------------
-
-if [ "$1" == "-i" ]; then
-	NOMBRE=`basename $0`
-	#echo "$NOMBRE no está instalado" | mostrar
-	echo -e "[Desktop Entry]\nName=$NOMBRE\nDescription=No tengo nada que ocultar, pero sí mucho que proteger\nIcon=help-faq\nType=Application\nExec=$NOMBRE\nCategories=GTK;Utility;" > /tmp/$NOMBRE.desktop
-	# dependencias
-	TMP=$(mktemp)
-
-	# verifica el sistema operativo
-	if [ "$(which yum)" ]; then
-		aptitude="yum -y install"
-	elif [ "$(which pacman)" ]; then
-		aptitude="pacman -S"
-	else
-		aptitude="apt-get -y install"
-	fi
-	if [ "$(which gksu)" ]; then
-		gksu="gksu"
-	else
-		gksu="su -c"
-	fi
-	echo "$aptitude imagemagick
-	$aptitude steghide
-	$aptitude mcrypt
-	$aptitude zenity
-	$aptitude tor
-	$aptitude xsel
-	$aptitude proxychains
-	$aptitude zbar-tools
-	$aptitude qrencode
-	cp $NOMBRE /usr/bin/
-	cp /tmp/$NOMBRE.desktop /usr/share/applications/$NOMBRE.desktop" > $TMP
-	$gksu "bash $TMP" #| progreso
-	rm $TMP
-fi
-# hacer que funcione en otros Sistemas operativos y que sea mas simple
 
 # -------------------------- programa ----------------------------------
 
