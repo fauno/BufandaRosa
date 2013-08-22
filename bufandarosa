@@ -132,7 +132,7 @@ fi
 
 
 # ¿Que queres hacer?
-MENU=`echo  "Cifrar Descifrar Publicación_Anónima Quitar_metadatos Eliminar_archivos Ayuda" | opciones -t "Secreto" -m "¿Que queres hacer?"`
+MENU=`echo  "Cifrar Descifrar Publicación_Anónima Quitar_metadatos Eliminar_archivos Ayuda" | opciones -t "Bufanda Rosa" -m "¿Que queres hacer?"`
 
 case $MENU in
 	0 )
