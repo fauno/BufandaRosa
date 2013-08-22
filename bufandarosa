@@ -1,26 +1,107 @@
 #!/bin/bash
 #
 #	cifrado y descifrado de mensajes y archivos
-#	bufandarosa - versión 0.1
+#	creacion de esteganografías y mensajes cifrados en QR
+#	bufandarosa - versión 0.1.1
 #
+
 # --------------------------- funciones ---------------------------------
-if [ "$1" == "-h" ]; then
-	echo "$0 "
-	echo
-	echo "  -h Esta ayuda"
-	echo "  -i Instalación"
-	exit
-fi
 
 function uno {
+	[ "$1" == "-h" ]&& echo 'elige un elemento de una lista, ejemplo: echo "a b c d" | uno ' && exit
 	# elije uno al azar de una lista
         LISTA="`cat /dev/stdin | tr ' ' "\n"`"
         N=`echo "$LISTA" | wc -l`
         echo "$LISTA" | sed -n $[$RANDOM%$N+1]p
 }
+function metadatos {
+	[ "$1" == "-h" ]&& echo 'borra los metadatos de un archivo, ejemplo: metadatos archivo.jpg ' && exit
+	convert -strip "$1" "$1"
+}
+function tinyurl {
+	[ "$1" == "-h" ]&& echo 'publica un archivo o mensaje en tinyurl (tiene espacio limitado), ejemplo: echo "hola" | tinyurl ' && exit
+	descarga "https://tinyurl.com/create.php?url=data:text/html;charset=utf-8;base64,$1" \
+	| grep -o "https\?://[^\"']\+" | sed 's/[<|\ ].*$//g' | grep "//tinyurl.com/..*" |  sort -u
+}
+function borrar {
+	[ "$1" == "-h" ]&& echo 'borra un archivo (para simple), ejemplo: ' && exit
+	shred -uz -n 10 "$1"
+}
+function nombre {
+	[ "$1" == "-h" ]&& echo 'genera nombres al azar' && exit
+	pwgen -1 $[$RANDOM%6+5]
+}
+function pastie {
+	[ "$1" == "-h" ]&& echo 'envia un mensaje a un pastie al azar usando tor, ejemplo: `echo "hola" | pastie`' && exit
+	f=`mktemp`
+	cat /dev/stdin > $f
+	proxychains wgetpaste -g -v -r \
+	-n "`nombre`" \
+	-s `echo "bpaste ca codepad dpaste gists poundpython" | uno` \
+	$f | grep -o "https\?://[^\"']\+" | sed 's/[<|\ ].*$//g' | sort -u | progreso
+	borrar $f
+}
+function cifrar {
+	[ "$1" == "-h" ]&& echo 'cifra mensajes, ejmplo `echo "hola" | cifrar clave`' && exit
+	cat /dev/stdin | mcrypt -u -k "$1" -F 2> /dev/null | base64 $2
+}
+function descifrar {
+	[ "$1" == "-h" ]&& echo 'descifra mensajes, ejmplo `echo "hola" | cifrar clave | descifrar clave`' && exit
+	cat /dev/stdin | tr "\n" " " | sed -e :a -e 's/<[^>]*>//g;/</N;//ba' \
+	| sed 's/[^0-9A-Za-z=\/+-]//g' | base64 -d | mdecrypt - -k "$1" -F 2> /dev/null
+}
+function desesteganografia {
+	[ "$1" == "-h" ]&& echo 'muestra el mensaje dentro de una archivo o un QR, ejemplo desesteganografia clave imagen`' && exit
+	zbarimg --raw -q "$2" | descifrar "$1" || steghide extract -p "$1" -sf "$2" -xf -
+}
+function esteganografia {
+	[ "$1" == "-h" ]&& echo 'guarda un mensaje dentro de una archivo, ejemplo `echo 'hola' | esteganografia clave imagen`' && exit
+	cat /dev/stdin | steghide embed -ef - -p "$k" -cf "$cf"
+}
+function descarga {
+	# me gustaria convertir esto en GET
+	[ "$1" == "-h" ]&& echo 'descarga archivos con Tor, ejemplo `descarga http://loquesea.org`'  && exit
+	proxychains wget "$1" "$2" -qO -
+}
+function basura {
+	[ "$1" == "-h" ]&& echo "genera datos al azar" && exit
+	basura=`pwgen -s -y 10000`
+}
+function ayuda {
+	echo "Bufanda Rosa"
+	echo "============"
+	echo
+	funciones="basura cifrar descarga descifrar nombre pastie tinyurl uno"
+	for N in $funciones; do
+		echo " $N		`$N -h`"
+	done
+}
+#---------------------- ejecuta linea de comandos -----------------
+
+while getopts c:h OPCION; do
+        case $OPCION in
+	c)
+		function progreso {
+			echo "espere por favor"
+			cat /dev/stdin
+		}
+		eval ${OPTARG}
+		exit
+	;;
+	h)
+		echo "$0 "
+		echo
+		echo "  -h Esta ayuda"
+		echo "  -i Instalación"
+		echo "  -c linea de comandos"
+		echo "  -c 'ayuda' muestra ayuda sobre los comendos"
+		exit
+	esac
+done
+
+#---------------------- funciones graficas -----------------
 function opciones {
-	while getopts t:m: OPCION
-	do
+	while getopts t:m: OPCION; do
 	        case $OPCION in
 	                t) TITULO=${OPTARG}
 	                ;;
@@ -38,44 +119,8 @@ function opciones {
 	# genera el menu
 	eval "zenity --title \"$TITULO\" --text \"$MENSAJE\" --list --height=250 --column \"\" --column \"\" --hide-column 1  --hide-header $C"
 }
-function metadatos {
-	convert -strip "$1" "$1"
-}
-function borrar {
-	shred -uz -n 10 "$1"
-}
-function nombre {
-	pwgen -1 $[$RANDOM%6+5]
-}
-function pastie {
-	f=`mktemp`
-	cat /dev/stdin > $f
-	proxychains wgetpaste -g -v -r \
-	-n "`nombre`" \
-	-s `echo "bpaste ca codepad dpaste gists poundpython" | uno` \
-	$f | sed -n '2p' | sed 's/^.*:\ //' | progreso
-	borrar $f
-}
-function cifrar {
-	cat /dev/stdin | mcrypt -u -k "$1" -F | base64 $2
-}
-function descifrar {
-	cat /dev/stdin | tr "\n" " " | sed -e :a -e 's/<[^>]*>//g;/</N;//ba' \
-	| sed 's/[^0-9A-Za-z=\/+-]//g' | base64 -d | mdecrypt - -k "$1" -F
-}
-function esteganografia {
-	zbarimg --raw -q "$2" | descifrar "$1" || steghide extract -p "$1" -sf "$2" -xf -
-}
 function error {
 	zenity --error --text="$*"
-}
-function descarga {
-	# me gustaria convertir esto en GET
-	#proxychains
-	wget "$1" "$2" -qO -
-}
-function basura {
-	basura=`pwgen -s -y 10000`
 }
 function alerta {
 	zenity --warning --text="$(cat /dev/stdin)"
@@ -84,16 +129,18 @@ function clave {
 	zenity --title "Clave" --text "Introducir la clave" --entry --entry-text="$*"
 }
 function url {
-	zenity --title "URL" --text "Dirección" --entry --entry-text="$*"
+	zenity --title "URL" --text "Dirección" --entry --entry-text="$*" || exit
 }
 function archivo {
 	zenity --title "Elije el archivo" --file-selection
 }
 function archivos {
-	echo -e "$(zenity --title "Archivos" --text="Elije el archivos" --file-selection --multiple --separator="\n")"
+	echo -e "$(zenity --title "Archivos" --text="Elije los archivos" --file-selection --multiple --separator="\n" \
+	|| error "si necesita un archivo" && exit)"
 }
 function mensaje {
-	zenity --title "Mensaje" --text="Escribe el mensaje" --width=450 --height=350 --text-info --editable
+	zenity --title "Mensaje" --text="Escribe el mensaje" --width=450 --height=350 --text-info --editable \
+	|| error "si necesita un mensaje" && exit
 }
 function mostrar {
 	# mensaje de entrada
@@ -106,10 +153,9 @@ function mostrar {
 	echo "$MENSAJE" | xsel -i
 }
 function progreso {
-	cat /dev/stdin
 	zenity  --progress --pulsate --auto-close --auto-kill --no-cancel
+	cat /dev/stdin
 }
-
 
 
 #--------------- instalacion -----------------
@@ -168,20 +214,19 @@ case $MENU in
 			ef=`cat $(archivo || exit)`
 		;;
 	esac
-	k=`clave `pwgen -s -y -1 $[$RANDOM%10+6]``
+	k=`clave $(pwgen -s -y -1 $[$RANDOM%10+6])`
 	MENU=`echo -e "Texto Imágen_o_Audio Imágen_al_azar_de_la_web Publicar_en_TinyURL Publicar_en_Pastie Código_QR" | opciones -t "¿En donde?" -m "¿Donde lo queres ocultar?"` || exit
 	case $MENU in
 		0 )
 		# genera el mensaje y lo muestra en base64
-		echo "$ef" | cifrar "$k" | mostrar
+		echo "$ef" | cifrar "$k" -w80 | mostrar
 		;;
 		1 )
 		# guardar en un archivo (propio)
 		b=`archivo || exit`
-		# genera basura
-		basura | steghide embed -ef - -p "$k" -cf "$cf"
+		basura | esteganografia "$k" "$cf"
 		# guarda nuestro mensaje
-		echo "$ef" | steghide embed -ef - -p "$k" -cf "$b"
+		echo "$ef" | esteganografia "$k" "$cf"
 		;;
 		2 )
 		# busca una imagen al azar en la web (con tor)
@@ -197,7 +242,7 @@ case $MENU in
 			# url de la imagen
 			img_url=`descarga $FUENTE\
 			| grep -o '<*\(enclosure\|media:content\)[^>].*>' \
-			| grep -o 'http://[^\"]*' | uno`
+			| grep -o 'http://[^\" ]*' | uno`
 			# directorio de imagenes
 			echo $img_url > /dev/stderr
 			descarga "$img_url" > "$cf"
@@ -210,30 +255,22 @@ case $MENU in
 			exit
 		fi
 		# agrega mucha basura
-		basura | steghide embed -ef - -p "$k" -cf "$cf"
+		basura | esteganografia "$k" "$b"
 		# genera la imagen con password real
-		echo "$ef" | steghide embed -ef - -p "$k" -cf "$cf"
+		echo "$ef" | esteganografia "$k" "$b"
 		xdg-open "$(pwd)/$cf"
 		echo "$(pwd)/$cf" | mostrar "Imágen con un secreto"
 		;;
 		3 )
-		# publicar en tinyURL con Tor
-		# genera el mensaje y lo muestra en base64
-		m=`echo "$ef" | cifrar "$k"  -w0`
-		for N in {1,2,3}; do
-			sleep 3 | progreso &
+			# tinyurl
+			# genera el mensaje y lo muestra en base64
+			m=`echo "$ef" | cifrar "$k"  -w0`
 			# si no se puede genera la tinyurl prueba varias veces
-			u=`descarga "https://tinyurl.com/create.php?url=data:text/html;charset=utf-8;base64,$m" \
-			| grep "'https://tinyurl.com/" | head -n 1 | cut -d "'" -f 2`
-			echo "$u" && break || echo "No se generó la tinyURL" | error
-		done
-		echo "$u" | mostrar
+			tinyurl "$m" || tinyurl "$m" || tinyurl "$m" | progreso | mostrar || error "No se generó la tinyURL"
 		;;
 		4 )
-			# genera el mensaje y lo muestra en base64
+			# genera el mensaje, lo publica y lo muestra en base64
 			echo "$ef" | cifrar "$k" | pastie | mostrar
-
-		exit
 	   	;;
 		5)
 	                # genera codigo QR
@@ -262,6 +299,7 @@ case $MENU in
 		;;
 		2 )
 			URL=`url` || exit
+
 			# archivo temporal
 			sf=`mktemp`
 			if [ "$(echo $URL | grep tinyurl)" ]; then
@@ -274,15 +312,15 @@ case $MENU in
 			# mensaje descifrado en archivo
 		;;
 	esac
+
 	# descifrado generico
 	p=`clave`
-	echo "`esteganografia "$p" $sf || cat $sf | descifrar "$p"`" | mostrar
+	echo "`desesteganografia "$p" $sf || cat $sf | descifrar "$p"`" | mostrar
 	borrar $sf
 
 	;;
 	2 )
 		# publicacion anonima
-		f=`mktemp`
 		mensaje | pastie | mostrar
 	;;
 	3 )
