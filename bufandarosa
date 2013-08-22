@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 #	cifrado y descifrado de mensajes y archivos
-#	secreto - version 0.1
+#	bufandarosa - version 0.1
 #
 # --------------------------- funciones ---------------------------------
 if [ "$1" == "-h" ]; then
@@ -38,11 +38,14 @@ function metadatos {
 function borrar {
 	shred -uz -n 10 "$1"
 }
+function nombre {
+	pwgen -1 $[$RANDOM%6+5]
+}
 function pastie {
 	f=`mktemp`
 	cat /dev/stdin > $f
-	PASTIE=`echo "bpaste ca codepad dpaste gists poundpython" | sed 's/\ /\n/g'| sed -n $[$RANDOM%6+1]p`
-	proxychains wgetpaste -g -r -n $(pwgen -s -1) -s $PASTIE $f | sed -n '2p' | sed 's/^.*:\ //'
+	PASTIE=`echo "bpaste ca codepad dpaste gists poundpython" | sed 's/\ /\n/g'| uno`
+	proxychains wgetpaste -g -r -n nombre -s $PASTIE $f | sed -n '2p' | sed 's/^.*:\ //'
 	borrar $f
 }
 function cifrar {
@@ -53,11 +56,18 @@ function descifrar {
 	| sed 's/[^0-9A-Za-z=\/+-]//g' | base64 -d | mdecrypt - -k "$1" -F
 }
 function esteganografia {
-	zbarimg --raw -q "$2" | descifrar "$1" || \
-	steghide extract -p "$1" -sf "$2" -xf -
+	zbarimg --raw -q "$2" | descifrar "$1" || steghide extract -p "$1" -sf "$2" -xf -
 }
 function error {
 	zenity --error --text="$*"
+}
+function descarga {
+	# me gustaria convertir esto en GET
+	#proxychains 
+	wget "$1" "$2" -qO -
+}
+function basura {
+	basura=`pwgen -s -y 10000`
 }
 function alerta {
 	zenity --warning --text="$(cat /dev/stdin)"
@@ -90,6 +100,14 @@ function mostrar {
 function progreso {
 	zenity  --progress --pulsate --auto-close --auto-kill --no-cancel
 }
+function uno {
+	# elije uno al azar de una lista
+        LISTA="`cat /dev/stdin`"
+        N=`echo "$LISTA" | wc -l`
+        echo "$LISTA" | sed -n $[$RANDOM%$N+1]p
+}
+
+
 
 #--------------- instalacion -----------------
 
@@ -118,6 +136,7 @@ if [ "$1" == "-i" ]; then
 	$aptitude mcrypt
 	$aptitude zenity
 	$aptitude tor
+	$aptitude xsel
 	$aptitude proxychains
 	$aptitude zbar-tools
 	$aptitude qrencode
@@ -129,7 +148,6 @@ fi
 # hacer que funcione en otros Sistemas operativos y que sea mas simple
 
 # -------------------------- programa ----------------------------------
-
 
 # ¿Que queres hacer?
 MENU=`echo  "Cifrar Descifrar Publicación_Anónima Quitar_metadatos Eliminar_archivos Ayuda" | opciones -t "Bufanda Rosa" -m "¿Que queres hacer?"`
@@ -147,7 +165,7 @@ case $MENU in
 			ef=`cat $(archivo || exit)`
 		;;
 	esac
-	k=`clave $(pwgen  -1 -s $[$RANDOM%6+6])`
+	k=`clave `pwgen -s -y -1 $[$RANDOM%10+6]``
 	MENU=`echo -e "Texto Imagen_o_Audio Imagen_al_azar_de_la_web Publicar_en_TinyURL Publicar_en_Pastie Codigo_QR" | opciones -t "¿En donde?" -m "¿Donde lo queres ocultar?"` || exit
 	case $MENU in
 		0 )
@@ -158,7 +176,7 @@ case $MENU in
 		# guardar en un archivo (propio)
 		b=`archivo || exit`
 		# genera basura
-		pwgen -s 10000 | steghide embed -ef - -p "$k" -cf "$cf"
+		basura | steghide embed -ef - -p "$k" -cf "$cf"
 		# guarda nuestro mensaje
 		echo "$ef" | steghide embed -ef - -p "$k" -cf "$b"
 		;;
@@ -167,19 +185,19 @@ case $MENU in
 		# descarga el RSS para buscar imagenes
 		cd $PICTURES
 		# genera el nombre del archivo
-		cf="$(pwgen -1 $[$RANDOM%10+6]).jpg"
+		cf="`nombre`.jpg"
 		for W in {1,2,3}; do
 			# fuentes RSS
-			FUENTE=$(echo -e "http://ycpi.api.flickr.com/services/feeds/photos_public.gne\n\
+			FUENTE=`echo -e "http://ycpi.api.flickr.com/services/feeds/photos_public.gne\n\
 			http://www.nasa.gov/rss/lg_image_of_the_day.rss\n\
-			http://backend.deviantart.com/rss.xml" | sed -n $[$RANDOM%3+1]p)
+			http://backend.deviantart.com/rss.xml" | uno`
 			# url de la imagen
-			img_url=`proxychains wget -qO - $FUENTE\
+			img_url=`descarga $FUENTE\
 			| grep -o '<*\(enclosure\|media:content\)[^>].*>' \
-			| grep -o 'http://[^\"]*' | sed -n $[$RANDOM%6+1]p`
+			| grep -o 'http://[^\"]*' | uno`
 			# directorio de imagenes
 			echo $img_url > /dev/stderr
-			proxychains wget "$img_url" -O "$cf"
+			descarga "$img_url" > "$cf"
 			if [ -f "$cf" ]; then
 				break
 			fi
@@ -189,7 +207,7 @@ case $MENU in
 			exit
 		fi
 		# agrega mucha basura
-		pwgen -s 10000 | steghide embed -ef - -p "$k" -cf "$cf"
+		basura | steghide embed -ef - -p "$k" -cf "$cf"
 		# genera la imagen con password real
 		echo "$ef" | steghide embed -ef - -p "$k" -cf "$cf"
 		xdg-open "$(pwd)/$cf"
@@ -202,33 +220,22 @@ case $MENU in
 		for N in {1,2,3}; do
 			sleep 3 | progreso &
 			# si no se puede genera la tinyurl prueba varias veces
-			u=`proxychains wget -U Mozilla "https://tinyurl.com/create.php?url=data:text/html;charset=utf-8;base64,$m" -qO - \
+			u=`descarga "https://tinyurl.com/create.php?url=data:text/html;charset=utf-8;base64,$m" \
 			| grep "'https://tinyurl.com/" | head -n 1 | cut -d "'" -f 2`
 			echo "$u" && break || echo "no se genero la tinyURL" | error
 		done
 		echo "$u" | mostrar
-		
 		;;
 		4 )
 			# genera el mensaje y lo muestra en base64
 			echo "$ef" | cifrar "$k" | pastie | mostrar
 
 		exit
-		# nopaste-it -f "$f" | sed -n '2p' | sed 's/\t//g'
-		# "http://www.cjb.net/"=>{"image"=>"____"},
-   		# "http://kimag.es/"=>{"userfile1"=>"____"},
-		# "http://tinypic.com/"=>{"the_file"=>$ARGV[0]}
-		# "http://uploadpie.com/"=>{"uploadedfile"=>$ARGV[0]}
-		# "http://imgur.com/"=>{'file[]'=>$ARGV[0]}
-		# fileinput # archivo
-		# expire=4 # un dia
-		# http://uploadpie.com/
-
 	   	;;
 		5)
 	                # genera codigo QR
 			cd $PICTURES
-			sf=`pwgen -1`.png
+			sf=`nombre`.png
 			qrencode -o "$sf" "$(echo "$ef" | cifrar "$k" -w0)" || error "Los QR tienen espacio limitado"
 			metadatos "$sf"
 			echo "$(pwd)/$sf" | mostrar "Codigo QR generado"
@@ -252,42 +259,24 @@ case $MENU in
 			sf=`archivo` || exit
 			# mensaje descifrado en archivo
 			p=`clave`
-			esteganografia "$p" "$sf" | mostrar
+			m=`esteganografia "$p" "$sf" || cat "sf" | descifrar "$p"`
+			echo "$m"  | mostrar
 		;;
 		2 )
-			# url
 			URL=`url` || exit
-			# mensaje descifrado en archivo
 			p=`clave`
-			sleep 10 | progreso &
-			# descargas
+			# archivo temporal
+			sf=`mktemp`
 			if [ "$(echo $URL | grep tinyurl)" ]; then
 				# contenida en la URL
-				sf=`proxychains wget -S "$URL" -qO /dev/null 2> /dev/stdout | grep "Location:" | cut -d, -f2`
-				tipo="text"
+				echo "$(descarga "$URL" "-S" > /dev/null  2> /dev/stdout | grep "Location:" | cut -d, -f2)" > $sf
 			else
-				# contenida en el archivo
-				[ `echo $URL | grep nopaste` ]; URL="${URL}&download"
 				# crea un archivo temporal
-				f=`mktemp`
-				# descarga con proxy
-				proxychains wget "$URL" -qO $f
-				# tipo de archivo
-				tipo=`file -i $f | sed 's/^.*:\ //g; s/\/.*$//g'`
-				sf=`cat $f`
-				# borra el archivo temporal
-			fi
-			# interpreta depende si es cifrado o estenografia
-			if [ "$tipo" == "text" ]; then
-				# si es un texto
-				m=`echo $sf | descifrar "$p"`
-			else
-				# codigo de barras y luego mensaje oculto
-				m=`esteganografia "$p" "$sf"`
-			fi
-			# borrar el archivo temporal para siempre
-			echo "$m" | mostrar
-			borrar $f
+				descarga "$URL" > $sf
+			fi | progreso
+			# mensaje descifrado en archivo
+			echo "`esteganografia "$p" $sf || cat $sf | descifrar "$p"`" | mostrar
+			borrar $sf
 		;;
 	esac
 
@@ -313,7 +302,7 @@ case $MENU in
 		done | progreso
 	;;
 	5 )
-		echo -e "# Secreto\n_No tengo nada que ocultar, pero si mucho que proteger_\n\n" | mostrar
+		echo -e "# Bufanda Rosa\n_No tengo nada que ocultar, pero si mucho que proteger_\n\n" | mostrar
 esac
 
 exit
@@ -350,4 +339,15 @@ exit
 ## Quehaceres
 
 - hacer mas generico el instalador
-- simplificar
+- version cli
+- publicar en :
+		# "http://www.cjb.net/"=>{"image"=>"____"},
+   		# "http://kimag.es/"=>{"userfile1"=>"____"},
+		# "http://tinypic.com/"=>{"the_file"=>$ARGV[0]}
+		# "http://uploadpie.com/"=>{"uploadedfile"=>$ARGV[0]}
+		# "http://imgur.com/"=>{'file[]'=>$ARGV[0]}
+		# fileinput # archivo
+		# expire=4 # un dia
+		# http://uploadpie.com/
+
+
