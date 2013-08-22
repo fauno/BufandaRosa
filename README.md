@@ -12,10 +12,10 @@ cd /tmp
 wget https://github.com/b4zz4/BufandaRosa/archive/master.zip
 unzip master.zip
 cd BufandaRosa-master/
-chmod +x secreto
+chmod +x bufandarosa
 chmod +x wgetpaste
 sudo cp wgetpaste /usr/bin/
-./secreto -i
+./bufandarosa -i
 </pre>
 
 
