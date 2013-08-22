@@ -39,3 +39,7 @@ echo -e "pass 1234\nemail tuemail@mail.com\nstatus mi%20mensaje" | megabot m.fac
 </pre>
 
 _Esto debería enviar un mensaje a "tu" muro de facebutt_
+
+# Wgetpaste
+
+intento manterner la ultima versión en el repo. [Sitio original](http://wgetpaste.zlin.dk/)
