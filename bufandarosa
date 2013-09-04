@@ -35,7 +35,6 @@ function pastie {
 	[ "$1" == "-h" ]&& echo 'envia un mensaje a un pastie al azar usando tor, ejemplo: `echo "hola" | pastie`' && exit
 	f=`mktemp`
 	cat /dev/stdin > $f
-	sleep 5 | progreso &&
 	proxychains wgetpaste -g -v -r -n "`nombre`" \
 	-s `echo "bpaste codepad dpaste gists poundpython" | uno` \
 	$f | grep -o "https\?://[^\"']\+" | tail -n 1
@@ -202,10 +201,9 @@ function mostrar {
 	echo "$MENSAJE" | xsel -i
 }
 function progreso {
-	pid=`mktemp`
-	zenity  --progress --pulsate --auto-close --auto-kill --no-cancel & echo $! > $pid
+	zenity --progress --pulsate --auto-close --auto-kill &
 	cat /dev/stdin
-	kill `cat $pid`
+	killall `%1`
 }
 
 # -------------------------- programa ----------------------------------
