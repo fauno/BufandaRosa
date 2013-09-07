@@ -23,8 +23,6 @@ sudo cp wgetpaste /usr/bin/
 
 Linea de comandos para Bufanda Rosa.
 
-![captura del programa](img/shell.png)
-
 <pre>
 echo "echo 'hola mundo' | pastie" | bufandarosa -c
 </pre>
