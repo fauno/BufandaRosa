@@ -81,10 +81,10 @@ function progreso {
 }
 #---------------------- ejecuta linea de comandos -----------------
 
-while getopts c:hiu OPCION; do
+while getopts chiu OPCION; do
         case $OPCION in
 	c)
-		eval ${OPTARG}
+		eval "$(cat /dev/stdin)"
 		exit
 	;;
 	u)

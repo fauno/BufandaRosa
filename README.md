@@ -26,19 +26,14 @@ Linea de comandos para Bufanda Rosa.
 ![captura del programa](img/shell.png)
 
 <pre>
-bufandarosa -c ayuda
+echo "echo 'hola mundo' | pastie" | bufandarosa -c
 </pre>
-
-
-# Megabot
-
-Un robot web pensado para ser lo mas generico posible.
+> publica `hola mundo` en un pastie de modo anonimo
 
 <pre>
-echo -e "pass 1234\nemail tuemail@mail.com\nstatus mi%20mensaje" | megabot m.facebook.com
+echo ayuda | bufandarosa -c
 </pre>
-
-_Esto debería enviar un mensaje a "tu" muro de facebutt_
+> ayuda de la versión de terminal
 
 # Wgetpaste
 
