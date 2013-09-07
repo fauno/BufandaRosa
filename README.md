@@ -9,15 +9,9 @@ También nos permitirá guardar información, de cualquier tipo, dentro de una *
 
 <pre>
 cd /tmp
-wget https://github.com/b4zz4/BufandaRosa/archive/master.zip
-unzip master.zip
-cd BufandaRosa-master/
-chmod +x bufandarosa
-chmod +x wgetpaste
-sudo cp wgetpaste /usr/bin/
-./bufandarosa -i
+wget https://raw.github.com/b4zz4/BufandaRosa/master/bufandarosa
+bash bufandarosa -u
 </pre>
-
 
 ## Vieja escuela
 
@@ -33,6 +27,12 @@ echo ayuda | bufandarosa -c
 </pre>
 > ayuda de la versión de terminal
 
+## Quehaceres
+
+* Imágenes al azar de diversas fuentes
+* Publicación de imágenes automática
+* Cifrar usando [OTR](http://www.cypherpunks.ca/otr/)
+
 # Wgetpaste
 
-intento manterner la ultima versión en el repo. [Sitio original](http://wgetpaste.zlin.dk/)
+Intento mantener la ultima versión. [Sitio original](http://wgetpaste.zlin.dk/)
