@@ -50,13 +50,29 @@ function descifrar {
 	| sed 's/[^0-9A-Za-z=\/+-]//g' | base64 -d | gpg -d --passphrase "$1" 2> /dev/null
 }
 function cifrar_irc {
-	cat /dev/stdin | while read line; do
-		echo $line
+	while read SALIDA; do
+		echo $SALIDA > /dev/stderr
+		if [ "$(echo $SALIDA | grep -i '^privmsg ')" ]; then
+			A=`echo $SALIDA | sed 's/:.*$//g'`
+			B=`echo $SALIDA | sed 's/^.*://g' | cifrar "$1" -w0`
+			echo "$A:$B"
+			echo "cifrando IRC" > /dev/stderr
+		else
+			echo $SALIDA
+		fi
 	done
 }
 function descifrar_irc {
-	cat /dev/stdin | while read line; do
-		echo $line
+	while read SALIDA; do
+		echo $SALIDA > /dev/stderr
+		if [ "$(echo $SALIDA | grep -i '^privmsg ')" ]; then
+			A=`echo $SALIDA | sed 's/:.*$//g'`
+			B=`echo $SALIDA | sed 's/^.*://g' | descifrar "$1"`
+			echo $A:$B
+			echo "descifrando IRC" > /dev/stderr
+		else
+			echo $SALIDA
+		fi
 	done
 }
 function desesteganografia {

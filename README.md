@@ -13,6 +13,10 @@ wget https://raw.github.com/b4zz4/BufandaRosa/master/bufandarosa
 bash bufandarosa -u
 </pre>
 
+## Proxy de IRC cifrado
+
+Genera un proxy local de IRC que cifra los mensajes de entrada y salida en base a una clave.
+
 ## Vieja escuela
 
 Linea de comandos para Bufanda Rosa.
