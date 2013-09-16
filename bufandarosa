@@ -51,12 +51,10 @@ function descifrar {
 }
 function cifrar_irc {
 	while read SALIDA; do
-		echo $SALIDA > /dev/stderr
 		if [ "$(echo $SALIDA | grep -i '^privmsg ')" ]; then
 			A=`echo $SALIDA | sed 's/:.*$//g'`
-			B=`echo $SALIDA | sed 's/^.*://g' | cifrar "$1" -w0`
+			B=`echo $SALIDA | sed 's/^.*://g' | cifrar "$*" -w0 `
 			echo "$A:$B"
-			echo "cifrando IRC" > /dev/stderr
 		else
 			echo $SALIDA
 		fi
@@ -64,12 +62,12 @@ function cifrar_irc {
 }
 function descifrar_irc {
 	while read SALIDA; do
-		echo $SALIDA > /dev/stderr
-		if [ "$(echo $SALIDA | grep -i '^privmsg ')" ]; then
-			A=`echo $SALIDA | sed 's/:.*$//g'`
-			B=`echo $SALIDA | sed 's/^.*://g' | descifrar "$1"`
-			echo $A:$B
-			echo "descifrando IRC" > /dev/stderr
+		if [ "$(echo $SALIDA | grep -i ' privmsg ')" ]; then
+			A=`echo $SALIDA | sed 's/\ :.*$//g'`
+			B=`echo $SALIDA | sed 's/^:.*\ ://g'`
+			B=`echo $B | descifrar "$1" || echo "$B -- no cifrado"`
+			echo "$A :$B"
+			echo "$A :$B" > /dev/stderr
 		else
 			echo $SALIDA
 		fi
@@ -369,7 +367,7 @@ case $MENU in
 		MENSAJE=fifo
 		mkfifo fifo 2> /dev/null
 		SERVIDOR=`url "irc.freenode.net 6667" `
-		p=`clave`
+		p=`clave $(pwgen -s -y -1 $[$RANDOM%10+6])`
 		puerto=`url "6667"`
 		cat $MENSAJE | nc $SERVIDOR | descifrar_irc $p | nc -l $puerto | cifrar_irc $p > $MENSAJE | zenity --notification
 		# nota necesita icono
