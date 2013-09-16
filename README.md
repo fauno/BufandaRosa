@@ -2,6 +2,7 @@
 
 Este programa permite **cifrar** y **descifrar** mensaje o archivos para: enviarlos por correo electrónico, publicarlo o compartir de modo anónimo (con TOR). 
 También nos permitirá guardar información, de cualquier tipo, dentro de una **imagen**,  **archivo de audio** o generar códigos **QR** con el mensaje cifrado.
+Y chatear de modo cifrado en cualquier servidor de IRC.
 
 ![captura del programa](img/cifrado.png)
 
@@ -38,6 +39,8 @@ echo ayuda | bufandarosa -c
 * Publicación de imágenes automática
 * Cifrar usando [OTR](http://www.cypherpunks.ca/otr/)
 * hacer que el cifrado del IRC sea multiparty (basado en OTR)
+  * Soporte para SSL
+  * Tor para freenode
 
 # Wgetpaste
 
