@@ -3,6 +3,7 @@
 #	cifrado y descifrado de mensajes y archivos
 #	creacion de esteganografías y mensajes cifrados en QR
 #	bufandarosa - versión 0.1.3 (dirtirc)
+#	Licencia AGPL
 #
 
 # --------------------------- funciones ---------------------------------
@@ -170,6 +171,8 @@ while getopts chiu OPCION; do
 		$aptitude zbar-tools
 		$aptitude qrencode
 		$aptitude wgetpaste
+		$aptitude nc
+		$aptitude gnu-netcat
 		cp $NOMBRE /usr/bin/
 		[ ! "$(which wgetpaste)" ] && cp wgetpaste /usr/bin/
 		cp /tmp/$NOMBRE.desktop /usr/share/applications/$NOMBRE.desktop" > $TMP
