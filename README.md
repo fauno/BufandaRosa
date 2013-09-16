@@ -1,4 +1,5 @@
-# Bufanda Rosa
+# ![captura del programa](img/bufandarosa.png) Bufanda Rosa
+
 
 Este programa permite **cifrar** y **descifrar** mensaje o archivos para: enviarlos por correo electrónico, publicarlo o compartir de modo anónimo (con TOR). 
 También nos permitirá guardar información, de cualquier tipo, dentro de una **imagen**,  **archivo de audio** o generar códigos **QR** con el mensaje cifrado.

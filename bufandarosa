@@ -146,7 +146,7 @@ while getopts chiu OPCION; do
 	i)
 		NOMBRE=`basename $0`
 		#echo "$NOMBRE no está instalado" | mostrar
-		echo -e "[Desktop Entry]\nName=$NOMBRE\nDescription=No tengo nada que ocultar, pero sí mucho que proteger\nIcon=help-faq\nType=Application\nExec=$NOMBRE\nCategories=GTK;Utility;" > /tmp/$NOMBRE.desktop
+		echo -e "[Desktop Entry]\nName=$NOMBRE\nDescription=No tengo nada que ocultar, pero sí mucho que proteger\nIcon=$NOMBRE\nType=Application\nExec=$NOMBRE\nCategories=GTK;Utility;" > /tmp/$NOMBRE.desktop
 		# dependencias
 		TMP=$(mktemp)
 
@@ -165,7 +165,7 @@ while getopts chiu OPCION; do
 		fi
 		echo "$aptitude imagemagick
 		$aptitude steghide
-		$aptitude zenity
+		$aptitude zenity --window-icon=/usr/share/pixmaps/bufandarosa.png 
 		$aptitude tor
 		$aptitude xsel
 		$aptitude proxychains
@@ -176,6 +176,7 @@ while getopts chiu OPCION; do
 		$aptitude gnu-netcat
 		cp $NOMBRE /usr/bin/
 		[ ! "$(which wgetpaste)" ] && cp wgetpaste /usr/bin/
+		cp img/$NOMBRE.png /usr/share/pixmaps/
 		cp /tmp/$NOMBRE.desktop /usr/share/applications/$NOMBRE.desktop" > $TMP
 		echo "espera por favor"
 		$gksu "bash $TMP" > /dev/null 2> /dev/null
@@ -203,42 +204,42 @@ function opciones {
 		N=$(($N+1))
 	done
 	# genera el menu
-	eval "zenity --title \"$TITULO\" --text \"$MENSAJE\" --list --height=250 --column \"\" --column \"\" --hide-column 1  --hide-header $C"
+	eval "zenity --window-icon=/usr/share/pixmaps/bufandarosa.png --title \"$TITULO\" --text \"$MENSAJE\" --list --height=250 --column \"\" --column \"\" --hide-column 1  --hide-header $C"
 }
 function error {
-	zenity --error --text="$*"
+	zenity --window-icon=/usr/share/pixmaps/bufandarosa.png  --error --text="$*"
 }
 function alerta {
-	zenity --warning --text="$(cat /dev/stdin)"
+	zenity --window-icon=/usr/share/pixmaps/bufandarosa.png  --warning --text="$(cat /dev/stdin)"
 }
 function clave {
-	zenity --title "Clave" --text "Introducir la clave" --entry --entry-text="$*"
+	zenity --window-icon=/usr/share/pixmaps/bufandarosa.png  --title "Clave" --text "Introducir la clave" --entry --entry-text="$*"
 }
 function url {
-	zenity --title "URL" --text "Dirección" --entry --entry-text="$*"
+	zenity --window-icon=/usr/share/pixmaps/bufandarosa.png  --title "URL" --text "Dirección" --entry --entry-text="$*"
 }
 function archivo {
-	zenity --title "Elije el archivo" --file-selection
+	zenity --window-icon=/usr/share/pixmaps/bufandarosa.png  --title "Elije el archivo" --file-selection
 }
 function archivos {
-	echo -e "$(zenity --title "Archivos" --text="Elije los archivos" --file-selection --multiple --separator="\n" \
+	echo -e "$(zenity --window-icon=/usr/share/pixmaps/bufandarosa.png  --title "Archivos" --text="Elije los archivos" --file-selection --multiple --separator="\n" \
 	|| error "si necesita un archivo" && exit)"
 }
 function mensaje {
-	zenity --title "Mensaje" --text="Escribe el mensaje" --width=450 --height=350 --text-info --editable
+	zenity --window-icon=/usr/share/pixmaps/bufandarosa.png  --title "Mensaje" --text="Escribe el mensaje" --width=450 --height=350 --text-info --editable
 }
 function mostrar {
 	# mensaje de entrada
 	MENSAJE=`cat /dev/stdin`
 	if [ "$(echo "$MENSAJE" | wc -l )" == "1" ]; then
-		zenity --title "Mensaje decifrado" --width=450 --text="$*" --entry --entry-text="$MENSAJE"
+		zenity --window-icon=/usr/share/pixmaps/bufandarosa.png  --title "Mensaje decifrado" --width=450 --text="$*" --entry --entry-text="$MENSAJE"
 	else
-		echo "$MENSAJE" | zenity --title "Mensaje decifrado" --text="$*" --width=450 --height=350 --text-info
+		echo "$MENSAJE" | zenity --window-icon=/usr/share/pixmaps/bufandarosa.png  --title "Mensaje decifrado" --text="$*" --width=450 --height=350 --text-info
 	fi
 	echo "$MENSAJE" | xsel -i
 }
 function progreso {
-	zenity --progress --pulsate --auto-close --auto-kill &
+	zenity --window-icon=/usr/share/pixmaps/bufandarosa.png  --progress --pulsate --auto-close --auto-kill &
 	cat /dev/stdin
 	killall `%1`
 }
@@ -383,8 +384,8 @@ case $MENU in
 		p=`clave $(pwgen -s -y -1 $[$RANDOM%10+6])` || exit
 		# puerto
 		puerto=`url "6667"` || exit
-		# cat $MENSAJE | nc $SERVIDOR | descifrar_irc $p | nc -l $puerto | cifrar_irc $p > $MENSAJE | zenity --notification
-		irc "$SERVIDOR" "$p" "$puerto" | zenity --notification
+		# cat $MENSAJE | nc $SERVIDOR | descifrar_irc $p | nc -l $puerto | cifrar_irc $p > $MENSAJE | zenity --window-icon=/usr/share/pixmaps/bufandarosa.png  --notification
+		irc "$SERVIDOR" "$p" "$puerto" | zenity --window-icon=/usr/share/pixmaps/bufandarosa.png  --notification
 		# nota necesita icono
 	;;
 	4 )
