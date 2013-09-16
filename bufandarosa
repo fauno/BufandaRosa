@@ -48,13 +48,13 @@ function cifrar {
 function descifrar {
 	[ "$1" == "-h" ]&& echo 'descifra mensajes, ejmplo `echo "hola" | cifrar clave | descifrar clave`' && exit
 	cat /dev/stdin | tr "\n" " " | sed -e :a -e 's/<[^>]*>//g;/</N;//ba' \
-	| sed 's/[^0-9A-Za-z=\/+-]//g' | base64 -d | gpg -d --passphrase "$1" 2> /dev/null
+	| sed 's/[^0-9A-Za-z=\/+-]//g' | base64 -d | gpg -d --passphrase "$1"
 }
 function cifrar_irc {
 	while read SALIDA; do
 		if [ "$(echo $SALIDA | grep -i '^privmsg ')" ]; then
 			A=`echo $SALIDA | sed 's/:.*$//g'`
-			B=`echo $SALIDA | sed 's/^.*://g' | cifrar "$*" -w0 `
+			B=`echo $SALIDA | sed 's/^.*://g' | cifrar "$*" -w0`
 			echo "$A:$B"
 		else
 			echo $SALIDA
@@ -65,10 +65,11 @@ function descifrar_irc {
 	while read SALIDA; do
 		if [ "$(echo $SALIDA | grep -i ' privmsg ')" ]; then
 			A=`echo $SALIDA | sed 's/\ :.*$//g'`
-			B=`echo $SALIDA | sed 's/^:.*\ ://g'`
-			B=`echo $B | descifrar "$1" || echo "$B -- no cifrado"`
+			C=`echo $SALIDA | sed 's/^:.*\ ://g'`
+			B=`echo $C | descifrar "$1" || echo "$C -- no cifrado"`
+			# parche por que a veces anda mal
+			[ "$B" == "" ] && B=$C
 			echo "$A :$B"
-			echo "$A :$B" > /dev/stderr
 		else
 			echo $SALIDA
 		fi
@@ -77,11 +78,11 @@ function descifrar_irc {
 
 function irc {
 	[ "$1" == "-h" ]&& echo 'irc "irc.servidor 6667" clave "puerto local" `' && exit
+	# archivo fifo temporal
 	MENSAJE="/tmp/$(pwgen -s -1 $[$RANDOM%10+6])"
 	mkfifo $MENSAJE 2> /dev/null
 	cat $MENSAJE | nc $1 | descifrar_irc $2 | nc -l $3 | cifrar_irc $2 > $MENSAJE
 }
-
 function desesteganografia {
 	[ "$1" == "-h" ]&& echo 'muestra el mensaje dentro de una archivo o un QR, ejemplo desesteganografia clave imagen`' && exit
 	zbarimg --raw -q "$2" | descifrar "$1" || steghide extract -p "$1" -sf "$2" -xf -
