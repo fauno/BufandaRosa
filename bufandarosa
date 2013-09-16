@@ -368,11 +368,11 @@ case $MENU in
 		MENSAJE="/tmp/$(pwgen -s -1 $[$RANDOM%10+6])"
 		mkfifo $MENSAJE 2> /dev/null
 		# elegis el servidor
-		SERVIDOR=`url "irc.freenode.net 6667" `
+		SERVIDOR=`url "irc.freenode.net 6667" ` || exit
 		# clave
-		p=`clave $(pwgen -s -y -1 $[$RANDOM%10+6])`
+		p=`clave $(pwgen -s -y -1 $[$RANDOM%10+6])` || exit
 		# puerto
-		puerto=`url "6667"`
+		puerto=`url "6667"` || exit
 		cat $MENSAJE | nc $SERVIDOR | descifrar_irc $p | nc -l $puerto | cifrar_irc $p > $MENSAJE | zenity --notification
 		# nota necesita icono
 	;;
