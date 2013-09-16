@@ -16,6 +16,7 @@ bash bufandarosa -u
 ## Proxy de IRC cifrado
 
 Genera un proxy local de IRC que cifra los mensajes de entrada y salida en base a una clave.
+Esta basado en el concepto de [dirtirc](http://dirtirc.sf.net) pero con un cifrado mucho más complejo basado en `GPG`.
 
 ## Vieja escuela
 
@@ -36,6 +37,7 @@ echo ayuda | bufandarosa -c
 * Imágenes al azar de diversas fuentes
 * Publicación de imágenes automática
 * Cifrar usando [OTR](http://www.cypherpunks.ca/otr/)
+* hacer que el cifrado del IRC sea multiparty (basado en OTR)
 
 # Wgetpaste
 
