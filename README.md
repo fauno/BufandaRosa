@@ -48,6 +48,7 @@ echo "irc 'irc.freenode.net 6667' clave 6667" | bufandarosa -c
 * hacer que el cifrado del IRC sea multiparty (basado en OTR)
   * Soporte para SSL
   * Tor para freenode
+* Leer feed en busqueda de mensajes cifrados
 
 # Wgetpaste
 

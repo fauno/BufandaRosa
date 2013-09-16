@@ -2,6 +2,7 @@
 #
 #	cifrado y descifrado de mensajes y archivos
 #	creacion de esteganografías y mensajes cifrados en QR
+#	proxy de IRC cifrado con GPG (con clave)
 #	bufandarosa - versión 0.1.3 (dirtirc)
 #	Licencia AGPL
 #
