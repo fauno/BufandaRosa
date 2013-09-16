@@ -177,7 +177,8 @@ while getopts chiu OPCION; do
 		cp $NOMBRE /usr/bin/
 		[ ! "$(which wgetpaste)" ] && cp wgetpaste /usr/bin/
 		cp /tmp/$NOMBRE.desktop /usr/share/applications/$NOMBRE.desktop" > $TMP
-		$gksu "bash $TMP"
+		echo "espera por favor"
+		$gksu "bash $TMP" > /dev/null 2> /dev/null
 		rm $TMP
 		exit
 		;;
@@ -402,7 +403,7 @@ case $MENU in
 		done | progreso
 	;;
 	6 )
-		echo -e "# Bufanda Rosa\n_No tengo nada que ocultar, pero sí mucho que proteger_\n\n" | mostrar
+		echo -e "# Bufanda Rosa\n_No tengo nada que ocultar, pero sí mucho que proteger_\n\nhttps://github.com/b4zz4/BufandaRosa" | mostrar
 esac
 
 exit
