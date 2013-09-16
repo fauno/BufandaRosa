@@ -17,11 +17,12 @@ bash bufandarosa -u
 
 ## Proxy de IRC cifrado
 
-![captura del programa](img/irc.png)
-
 Genera un proxy de cualquier servidor de IRC (sin SSL) cifrando y descifrando los mensajes de entrada y salida (con clave).
 Esta inspirado en el concepto de [dirtirc](http://dirtirc.sf.net), pero con un cifrado mucho más fuerte basado en `GPG`.
 Lo único que necesitas es coordinar previamente que clave van a utilizar.
+
+![captura del programa](img/irc.png)
+> Captura de la configuración del IRC en pidgin
 
 ## Vieja escuela
 
