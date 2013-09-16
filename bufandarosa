@@ -73,6 +73,14 @@ function descifrar_irc {
 		fi
 	done
 }
+
+function irc {
+	[ "$1" == "-h" ]&& echo 'irc "irc.servidor 6667" clave "puerto local" `' && exit
+	MENSAJE="/tmp/$(pwgen -s -1 $[$RANDOM%10+6])"
+	mkfifo $MENSAJE 2> /dev/null
+	cat $MENSAJE | nc $1 | descifrar_irc $2 | nc -l $3 | cifrar_irc $2 > $MENSAJE
+}
+
 function desesteganografia {
 	[ "$1" == "-h" ]&& echo 'muestra el mensaje dentro de una archivo o un QR, ejemplo desesteganografia clave imagen`' && exit
 	zbarimg --raw -q "$2" | descifrar "$1" || steghide extract -p "$1" -sf "$2" -xf -
@@ -94,7 +102,7 @@ function ayuda {
 	echo "Bufanda Rosa"
 	echo "============"
 	echo
-	funciones="basura cifrar descarga descifrar nombre pastie tinyurl uno"
+	funciones="basura cifrar descarga descifrar nombre pastie tinyurl uno irc"
 	for N in $funciones; do
 		echo " $N		`$N -h`"
 	done
@@ -130,7 +138,7 @@ while getopts chiu OPCION; do
 		echo "  -i Instalación"
 		echo "  -u actualiza el programa"
 		echo "  -c linea de comandos"
-		echo "  -c 'ayuda' muestra ayuda sobre los comendos"
+		echo '  `echo "ayuda" | bufandarosa` muestra ayuda sobre los comendos'
 		exit
 	;;
 	i)
@@ -364,16 +372,14 @@ case $MENU in
 	;;
 	3 )
 		# proxy IRC cifrado - basado en el concepto de dirtirc
-		# archivo temporal
-		MENSAJE="/tmp/$(pwgen -s -1 $[$RANDOM%10+6])"
-		mkfifo $MENSAJE 2> /dev/null
 		# elegis el servidor
 		SERVIDOR=`url "irc.freenode.net 6667" ` || exit
 		# clave
 		p=`clave $(pwgen -s -y -1 $[$RANDOM%10+6])` || exit
 		# puerto
 		puerto=`url "6667"` || exit
-		cat $MENSAJE | nc $SERVIDOR | descifrar_irc $p | nc -l $puerto | cifrar_irc $p > $MENSAJE | zenity --notification
+		# cat $MENSAJE | nc $SERVIDOR | descifrar_irc $p | nc -l $puerto | cifrar_irc $p > $MENSAJE | zenity --notification
+		irc "$SERVIDOR" "$p" "$puerto" | zenity --notification
 		# nota necesita icono
 	;;
 	4 )
