@@ -364,10 +364,14 @@ case $MENU in
 	;;
 	3 )
 		# proxy IRC cifrado - basado en el concepto de dirtirc
-		MENSAJE=fifo
-		mkfifo fifo 2> /dev/null
+		# archivo temporal
+		MENSAJE="/tmp/$(pwgen -s -1 $[$RANDOM%10+6])"
+		mkfifo $MENSAJE 2> /dev/null
+		# elegis el servidor
 		SERVIDOR=`url "irc.freenode.net 6667" `
+		# clave
 		p=`clave $(pwgen -s -y -1 $[$RANDOM%10+6])`
+		# puerto
 		puerto=`url "6667"`
 		cat $MENSAJE | nc $SERVIDOR | descifrar_irc $p | nc -l $puerto | cifrar_irc $p > $MENSAJE | zenity --notification
 		# nota necesita icono
