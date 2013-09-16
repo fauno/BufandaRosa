@@ -165,7 +165,7 @@ while getopts chiu OPCION; do
 		fi
 		echo "$aptitude imagemagick
 		$aptitude steghide
-		$aptitude zenity --window-icon=/usr/share/pixmaps/bufandarosa.png 
+		$aptitude zenity
 		$aptitude tor
 		$aptitude xsel
 		$aptitude proxychains
