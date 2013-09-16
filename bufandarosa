@@ -49,6 +49,16 @@ function descifrar {
 	cat /dev/stdin | tr "\n" " " | sed -e :a -e 's/<[^>]*>//g;/</N;//ba' \
 	| sed 's/[^0-9A-Za-z=\/+-]//g' | base64 -d | gpg -d --passphrase "$1" 2> /dev/null
 }
+function cifrar_irc {
+	cat /dev/stdin | while read line; do
+		echo $line
+	done
+}
+function descifrar_irc {
+	cat /dev/stdin | while read line; do
+		echo $line
+	done
+}
 function desesteganografia {
 	[ "$1" == "-h" ]&& echo 'muestra el mensaje dentro de una archivo o un QR, ejemplo desesteganografia clave imagen`' && exit
 	zbarimg --raw -q "$2" | descifrar "$1" || steghide extract -p "$1" -sf "$2" -xf -
@@ -209,7 +219,7 @@ function progreso {
 # -------------------------- programa ----------------------------------
 
 # ¿Que queres hacer?
-MENU=`echo  "Cifrar Descifrar Publicación_Anónima Quitar_metadatos Eliminar_archivos Ayuda" | opciones -t "Bufanda Rosa" -m "¿Que queres hacer?"`
+MENU=`echo  "Cifrar Descifrar Publicación_Anónima Proxy_IRC_cifrado Quitar_metadatos Eliminar_archivos Ayuda" | opciones -t "Bufanda Rosa" -m "¿Que queres hacer?"`
 
 case $MENU in
 	0 )
@@ -339,6 +349,16 @@ case $MENU in
 		mensaje | pastie | progreso | mostrar
 	;;
 	3 )
+		# proxy IRC cifrado - basado en el concepto de dirtirc
+		MENSAJE=fifo
+		mkfifo fifo 2> /dev/null
+		SERVIDOR=`url "irc.freenode.net 6667" `
+		p=`clave`
+		puerto=`url "6667"`
+		cat $MENSAJE | nc $SERVIDOR | descifrar_irc $p | nc -l $puerto | cifrar_irc $p > $MENSAJE | zenity --notification
+		# nota necesita icono
+	;;
+	4 )
 		# Quitar metadatos
 		archivos  || exit | while read ARCHIVO; do
 			# falta quitar las caras
@@ -346,14 +366,14 @@ case $MENU in
 			metadatos "$ARCHIVO"
 		done | progreso
 	;;
-	4 )
+	5 )
 		# Eliminar archivos de modo seguro
 		archivos || exit | while read ARCHIVO; do
 			# borra el archivo para simpre
 			borrar "$ARCHIVO"
 		done | progreso
 	;;
-	5 )
+	6 )
 		echo -e "# Bufanda Rosa\n_No tengo nada que ocultar, pero sí mucho que proteger_\n\n" | mostrar
 esac
 
