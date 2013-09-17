@@ -54,25 +54,24 @@ function descifrar {
 function cifrar_irc {
 	while read SALIDA; do
 		if [ "$(echo $SALIDA | grep -i '^privmsg ')" ]; then
-			A=`echo $SALIDA | sed 's/:.*$//g'`
-			B=`echo $SALIDA | sed 's/^.*://g' | cifrar "$*" -w0`
+			A=`echo "$SALIDA" | sed 's/:.*$//g'`
+			B=`echo "$SALIDA" | sed 's/^.*://g' | cifrar "$*" -w0`
 			echo "$A:$B"
+			echo "$A:$B" > /dev/stderr
 		else
-			echo $SALIDA
+			echo "$SALIDA"
 		fi
 	done
 }
 function descifrar_irc {
 	while read SALIDA; do
 		if [ "$(echo $SALIDA | grep -i ' privmsg ')" ]; then
-			A=`echo $SALIDA | sed 's/\ :.*$//g'`
-			C=`echo $SALIDA | sed 's/^:.*\ ://g'`
-			B=`echo $C | descifrar "$1" || echo "$C -- no cifrado"`
+			A=`echo "$SALIDA" | sed 's/\ :.*$//g'`
+			B=`echo "$SALIDA" | sed 's/^:.*\ ://g' | descifrar "$1"`
 			# parche por que a veces anda mal
-			[ "$B" == "" ] && B=$C
-			echo "$A :$B"
+			[ "$B" == "" ] && echo "$SALIDA [no cifrado]" || echo "$A :$B"
 		else
-			echo $SALIDA
+			echo "$SALIDA"
 		fi
 	done
 }
@@ -276,7 +275,7 @@ case $MENU in
 	#------------------ entrada ----------------------
 	MENU=`echo -e "Escribir_mensaje Archivo" | opciones -t "Ciframe" -m "¿Que deseas proteger?"` || exit
 	case $MENU in
-		0 )	# escribir un mensaje 
+		0 )	# escribir un mensaje
 			ef=`mensaje`
 		;;
 		1 )	# elige un archivo
@@ -462,8 +461,6 @@ exit
 
 ## Quehaceres
 
-- hacer mas generico el instalador
-- version cli
 - publicar en :
 		# "http://www.cjb.net/"=>{"image"=>"____"},
    		# "http://kimag.es/"=>{"userfile1"=>"____"},
