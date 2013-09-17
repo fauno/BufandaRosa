@@ -69,7 +69,7 @@ function descifrar_irc {
 			A=`echo "$SALIDA" | sed 's/\ :.*$//g'`
 			B=`echo "$SALIDA" | sed 's/^:.*\ ://g' | descifrar "$1"`
 			# parche por que a veces anda mal
-			[ "$B" == "" ] && echo "$SALIDA [no cifrado]" || echo "$A :$B"
+			[ "$B" == "" ] && echo "$SALIDA [sin cifrar]" || echo "$A :$B"
 		else
 			echo "$SALIDA"
 		fi
