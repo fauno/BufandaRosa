@@ -17,8 +17,8 @@ bash bufandarosa -u
 
 ## IRC cifrado
 
-Genera un proxy de cualquier servidor de IRC cifrando y descifrando los mensajes de entrada y salida (con clave).
-Por ejemplo podemos utilizar `irc.freenode.net` y la clave `1234`. 
+Genera un proxy de cualquier servidor IRC, cifrando los mensajes de salida y descifrando los de entrada. 
+Por ejemplo podemos utilizar `irc.freenode.net` y la clave `1234` (esta se usara para el cifrado). 
 
 ![captura del programa](img/irc.png)
 > Captura de la configuración del IRC en pidgin
