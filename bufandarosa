@@ -84,6 +84,23 @@ function irc {
 	mkfifo $MENSAJE 2> /dev/null
 	cat $MENSAJE | nc $1 | descifrar_irc $2 | nc -l $3 | cifrar_irc $2 > $MENSAJE
 }
+function irc_cliente {
+	# se conecta al canal e pone un nick
+	echo "JOIN $2\nNICK $1\nUSER $1 ${1}_ ${1}__ :$1" > /tmp/mensaje
+	sleep 5
+	# lee los mensajes y mantiene vivo el chat
+        while read SALIDA; do
+                if [ "$(echo $SALIDA | grep PING)" ]; then
+                        # ping para mantener viva la conexion
+                        echo "PONG"
+                fi
+		# metodo para enviar mensajes (precario :P)
+		if [ -x /tmp/mensaje ]; then
+			cat /tmp/mensaje
+			borrar /tmp/mensaje
+		fi
+        done;
+}
 function desesteganografia {
 	[ "$1" == "-h" ]&& echo 'muestra el mensaje dentro de una archivo o un QR, ejemplo desesteganografia clave imagen`' && exit
 	zbarimg --raw -q "$2" | descifrar "$1" || steghide extract -p "$1" -sf "$2" -xf -
@@ -216,6 +233,9 @@ function alerta {
 function clave {
 	zenity --window-icon=/usr/share/pixmaps/bufandarosa.png  --title "Clave" --text "Introducir la clave" --entry --entry-text="$*"
 }
+function clave_gpg {
+	zenity --window-icon=/usr/share/pixmaps/bufandarosa.png  --title "Clave" --text "Introducir la clave" --entry --entry-text="$*"
+}
 function url {
 	zenity --window-icon=/usr/share/pixmaps/bufandarosa.png  --title "URL" --text "Dirección" --entry --entry-text="$*"
 }
@@ -256,14 +276,14 @@ case $MENU in
 	#------------------ entrada ----------------------
 	MENU=`echo -e "Escribir_mensaje Archivo" | opciones -t "Ciframe" -m "¿Que deseas proteger?"` || exit
 	case $MENU in
-		0 )
+		0 )	# escribir un mensaje 
 			ef=`mensaje`
 		;;
-		1 )
+		1 )	# elige un archivo
 			ef=`cat $(archivo || exit)`
 		;;
 	esac
-	k=`clave $(pwgen -s -y -1 $[$RANDOM%10+6])`
+	k=`clave $(pwgen -s -y -1 $[$RANDOM%10+6]) || clave GPG`
 	MENU=`echo -e "Texto Imágen_o_Audio Imágen_al_azar_de_la_web Publicar_en_TinyURL Publicar_en_Pastie Código_QR" | opciones -t "¿En donde?" -m "¿Donde lo queres ocultar?"` || exit
 	case $MENU in
 		0 )
@@ -338,7 +358,7 @@ case $MENU in
 	# Descifrar
 
 	# mensaje archivo o URL
-	MENU=`echo -e "Mensaje Archivo_o_Código_QR Dirección_web" | opciones -t "Descifrar" -m "¿Dónde queres buscar?"` || exit
+	MENU=`echo -e "Mensaje Archivo_o_Código_QR Dirección_web Llave_GPG" | opciones -t "Descifrar" -m "¿Dónde queres buscar?"` || exit
 	case $MENU in
 		0 )
 			# texto
@@ -368,7 +388,8 @@ case $MENU in
 	esac
 
 	# descifrado generico
-	p=`clave`
+	p=`clave || clave GPG`
+
 	echo "`desesteganografia "$p" $sf || cat $sf | descifrar "$p"`" | mostrar
 	borrar $sf 2> /dev/null
 
@@ -386,7 +407,7 @@ case $MENU in
 		# puerto
 		puerto=`url "6667"` || exit
 		# cat $MENSAJE | nc $SERVIDOR | descifrar_irc $p | nc -l $puerto | cifrar_irc $p > $MENSAJE | zenity --window-icon=/usr/share/pixmaps/bufandarosa.png  --notification
-		irc "$SERVIDOR" "$p" "$puerto" | zenity --window-icon=/usr/share/pixmaps/bufandarosa.png  --notification
+		irc "$SERVIDOR" "$p" "$puerto" | zenity --window-icon=/usr/share/pixmaps/bufandarosa.png  --notification --listen
 		# nota necesita icono
 	;;
 	4 )
