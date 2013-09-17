@@ -18,19 +18,19 @@ bash bufandarosa -u
 ## IRC cifrado
 
 Genera un desvío de cualquier servidor IRC, cifrando los mensajes de salida y descifrando los de entrada. 
-Por ejemplo podemos utilizar `irc.freenode.net` y la clave `1234`, esta se usa para el cifrado. 
+Por ejemplo podemos utilizar `irc.freenode.net` y la clave de cifrado `1234`.
 
 <pre>
 echo "irc 'irc.freenode.net 6667' 1234 6667" | bufandarosa -c
 </pre>
 
 ![captura del programa](img/irc.png)
-> Luego, debemos correr un cliente y conectarlo al servidor `127.0.0.1`
+> Luego, debemos correr un cliente (por ejemplo [Pidgin](https://pidgin.im/)) y conectarlo al servidor `127.0.0.1`
 
 ![captura del programa](img/canal.png)
 > Conectarnos al canal `#bufandarosa` (por ejemplo).
 
-Esta inspirado en el concepto de [dirtirc](http://dirtirc.sf.net), pero con un cifrado mucho más fuerte basado en `GPG`.
+Esta inspirado en el concepto de [dirtirc](http://dirtirc.sf.net), pero con un cifrado mucho más fuerte basado en [GPG](http://www.gnupg.org/index.es.html).
 
 **Nota:** NO anonimiza la conexión, solo nuestros mensajes.
 
