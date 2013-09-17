@@ -268,7 +268,7 @@ function progreso {
 # -------------------------- programa ----------------------------------
 
 # ¿Que queres hacer?
-MENU=`echo  "Cifrar Descifrar Publicación_Anónima Proxy_IRC_cifrado Quitar_metadatos Eliminar_archivos Ayuda" | opciones -t "Bufanda Rosa" -m "¿Que queres hacer?"`
+MENU=`echo  "Cifrar Descifrar Publicación_Anónima IRC_cifrado Quitar_metadatos Eliminar_archivos Ayuda" | opciones -t "Bufanda Rosa" -m "¿Que queres hacer?"`
 
 case $MENU in
 	0 )
