@@ -20,6 +20,12 @@ bash bufandarosa -u
 Genera un proxy de cualquier servidor IRC, cifrando los mensajes de salida y descifrando los de entrada. 
 Por ejemplo podemos utilizar `irc.freenode.net` y la clave `1234` (esta se usara para el cifrado). 
 
+<pre>
+echo "irc 'irc.freenode.net 6667' 1234 6667" | bufandarosa -c
+</pre>
+> Genera un proxy de freenode cifrado, tambien se puede hacer con la interfaz gráfica
+
+
 ![captura del programa](img/irc.png)
 > Captura de la configuración del IRC en pidgin
 
@@ -29,6 +35,7 @@ Luego de levantar el proxy debemos correr un cliente y conectarnos al canal `#bu
 > Captura de la configuración del canal en pidgin
 
 Esta inspirado en el concepto de [dirtirc](http://dirtirc.sf.net), pero con un cifrado mucho más fuerte basado en `GPG`.
+**Nota:** NO anonimiza la conexión.
 
 ## Vieja escuela
 
@@ -43,11 +50,6 @@ echo "echo 'hola mundo' | pastie" | bufandarosa -c
 echo ayuda | bufandarosa -c
 </pre>
 > ayuda de la versión de terminal
-
-<pre>
-echo "irc 'irc.freenode.net 6667' clave 6667" | bufandarosa -c
-</pre>
-> Genera un proxy de freenode cifrado (NO anonimiza la conexión)
 
 ## Quehaceres
 
