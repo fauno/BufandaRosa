@@ -15,14 +15,20 @@ wget https://raw.github.com/b4zz4/BufandaRosa/master/bufandarosa
 bash bufandarosa -u
 </pre>
 
-## Proxy de IRC cifrado
+## IRC cifrado
 
-Genera un proxy de cualquier servidor de IRC (sin SSL) cifrando y descifrando los mensajes de entrada y salida (con clave).
-Esta inspirado en el concepto de [dirtirc](http://dirtirc.sf.net), pero con un cifrado mucho más fuerte basado en `GPG`.
-Lo único que necesitas es coordinar previamente que clave van a utilizar.
+Genera un proxy de cualquier servidor de IRC cifrando y descifrando los mensajes de entrada y salida (con clave).
+Por ejemplo podemos utilizar `irc.freenode.net` y la clave `1234`. 
 
 ![captura del programa](img/irc.png)
 > Captura de la configuración del IRC en pidgin
+
+Luego de levantar el proxy podemos debemos correr un cliente y conectarnos al canal `#bufandarosa` (por ejemplo).
+
+![captura del programa](img/canal.png)
+> Captura de la configuración del canal en pidgin
+
+Esta inspirado en el concepto de [dirtirc](http://dirtirc.sf.net), pero con un cifrado mucho más fuerte basado en `GPG`.
 
 ## Vieja escuela
 
@@ -49,9 +55,11 @@ echo "irc 'irc.freenode.net 6667' clave 6667" | bufandarosa -c
 * Publicación de imágenes automática
 * Cifrar usando [OTR](http://www.cypherpunks.ca/otr/)
 * hacer que el cifrado del IRC sea multiparty (basado en OTR)
+  * Cifrado con llave GPG `echo "hola" | gpg -r $ID -e - | gpg -r $ID --passphrase $CLAVE -d -`
   * Soporte para SSL
-  * Tor para freenode
+  * ~~Tor para freenode~~ posiblemente con salto entre servidores
 * Leer feed en busqueda de mensajes cifrados
+
 
 # Wgetpaste
 
