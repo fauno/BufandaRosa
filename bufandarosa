@@ -83,23 +83,6 @@ function irc {
 	mkfifo $MENSAJE 2> /dev/null
 	cat $MENSAJE | nc $1 | descifrar_irc $2 | nc -l $3 | cifrar_irc $2 > $MENSAJE
 }
-function irc_cliente {
-	# se conecta al canal e pone un nick
-	echo "JOIN $2\nNICK $1\nUSER $1 ${1}_ ${1}__ :$1" > /tmp/mensaje
-	sleep 5
-	# lee los mensajes y mantiene vivo el chat
-        while read SALIDA; do
-                if [ "$(echo $SALIDA | grep PING)" ]; then
-                        # ping para mantener viva la conexion
-                        echo "PONG"
-                fi
-		# metodo para enviar mensajes (precario :P)
-		if [ -x /tmp/mensaje ]; then
-			cat /tmp/mensaje
-			borrar /tmp/mensaje
-		fi
-        done;
-}
 function desesteganografia {
 	[ "$1" == "-h" ]&& echo 'muestra el mensaje dentro de una archivo o un QR, ejemplo desesteganografia clave imagen`' && exit
 	zbarimg --raw -q "$2" | descifrar "$1" || steghide extract -p "$1" -sf "$2" -xf -
@@ -282,7 +265,7 @@ case $MENU in
 			ef=`cat $(archivo || exit)`
 		;;
 	esac
-	k=`clave $(pwgen -s -y -1 $[$RANDOM%10+6]) || clave GPG`
+	k=`clave $(pwgen -s -y -1 $[$RANDOM%10+6])`
 	MENU=`echo -e "Texto Imágen_o_Audio Imágen_al_azar_de_la_web Publicar_en_TinyURL Publicar_en_Pastie Código_QR" | opciones -t "¿En donde?" -m "¿Donde lo queres ocultar?"` || exit
 	case $MENU in
 		0 )
@@ -387,7 +370,7 @@ case $MENU in
 	esac
 
 	# descifrado generico
-	p=`clave || clave GPG`
+	p=`clave`
 
 	echo "`desesteganografia "$p" $sf || cat $sf | descifrar "$p"`" | mostrar
 	borrar $sf 2> /dev/null
