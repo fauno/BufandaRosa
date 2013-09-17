@@ -3,7 +3,7 @@
 #	cifrado y descifrado de mensajes y archivos
 #	creacion de esteganografías y mensajes cifrados en QR
 #	proxy de IRC cifrado con GPG (con clave)
-#	bufandarosa - versión 0.1.3 (dirtirc)
+#	bufandarosa - versión 0.1.4 (fauno2)
 #	Licencia AGPL
 #
 
@@ -76,12 +76,15 @@ function descifrar_irc {
 	done
 }
 
+function sock {
+	gnutls-cli $1 --port $2 --debug 0 || nc $1 $2
+}
 function irc {
-	[ "$1" == "-h" ]&& echo 'irc "irc.servidor 6667" clave "puerto local" `' && exit
+	[ "$1" == "-h" ]&& echo 'irc irc.servidor 6667 clave "puerto local" `' && exit
 	# archivo fifo temporal
 	MENSAJE="/tmp/$(pwgen -s -1 $[$RANDOM%10+6])"
 	mkfifo $MENSAJE 2> /dev/null
-	cat $MENSAJE | nc $1 | descifrar_irc $2 | nc -l $3 | cifrar_irc $2 > $MENSAJE
+	cat $MENSAJE | sock $1 $2 | descifrar_irc $3 | nc -l $4 | cifrar_irc $2 > $MENSAJE
 }
 function desesteganografia {
 	[ "$1" == "-h" ]&& echo 'muestra el mensaje dentro de una archivo o un QR, ejemplo desesteganografia clave imagen`' && exit
@@ -173,6 +176,7 @@ while getopts chiu OPCION; do
 		$aptitude qrencode
 		$aptitude wgetpaste
 		$aptitude nc
+		$aptitude gnutls-utils
 		$aptitude gnu-netcat
 		cp $NOMBRE /usr/bin/
 		[ ! "$(which wgetpaste)" ] && cp wgetpaste /usr/bin/
@@ -383,13 +387,13 @@ case $MENU in
 	3 )
 		# proxy IRC cifrado - basado en el concepto de dirtirc
 		# elegis el servidor
-		SERVIDOR=`url "irc.freenode.net 6667" ` || exit
+		SERVIDOR=`url "irc.freenode.net 6697" ` || exit
 		# clave
 		p=`clave $(pwgen -s -y -1 $[$RANDOM%10+6])` || exit
 		# puerto
 		puerto=`url "6667"` || exit
 		# cat $MENSAJE | nc $SERVIDOR | descifrar_irc $p | nc -l $puerto | cifrar_irc $p > $MENSAJE | zenity --window-icon=/usr/share/pixmaps/bufandarosa.png  --notification
-		irc "$SERVIDOR" "$p" "$puerto" | zenity --window-icon=/usr/share/pixmaps/bufandarosa.png  --notification --listen
+		irc $SERVIDOR "$p" "$puerto" | zenity --window-icon=/usr/share/pixmaps/bufandarosa.png  --notification --listen
 		# nota necesita icono
 	;;
 	4 )

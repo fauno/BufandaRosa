@@ -21,8 +21,9 @@ Genera un desvío de cualquier servidor IRC, cifrando los mensajes de salida y d
 Por ejemplo podemos utilizar `irc.freenode.net` y la clave de cifrado `1234`.
 
 <pre>
-echo "irc 'irc.freenode.net 6667' 1234 6667" | bufandarosa -c
+echo "irc irc.freenode.net 6697 1234 6667" | bufandarosa -c
 </pre>
+> Esto tambien se puede hacer con la interfaz gráfica
 
 ![captura del programa](img/irc.png)
 > Luego, debemos correr un cliente (por ejemplo [Pidgin](https://pidgin.im/)) y conectarlo al servidor `127.0.0.1`
@@ -56,7 +57,6 @@ echo ayuda | bufandarosa -c
 * Cifrar usando [OTR](http://www.cypherpunks.ca/otr/)
 * hacer que el cifrado del IRC sea multiparty (basado en OTR)
   * Cifrado con llave GPG `echo "hola" | gpg -r $ID -e - | gpg -r $ID --passphrase $CLAVE -d -`
-  * Soporte para SSL
   * ~~Tor para freenode~~ posiblemente con salto entre servidores
 * Leer feed en busqueda de mensajes cifrados
 
