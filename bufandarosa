@@ -57,7 +57,6 @@ function cifrar_irc {
 			A=`echo "$SALIDA" | sed 's/:.*$//g'`
 			B=`echo "$SALIDA" | sed 's/^.*://g' | cifrar "$*" -w0`
 			echo "$A:$B"
-			echo "$A:$B" > /dev/stderr
 		else
 			echo "$SALIDA"
 		fi
