@@ -77,10 +77,11 @@ function descifrar_irc {
 }
 
 function sock {
+	[ "$1" == "-h" ]&& echo 'conecta a un servidor usando SSL o no, ejemplo `sock servidor puerto`' && exit
 	gnutls-cli $1 --port $2 --debug 0 || nc $1 $2
 }
 function irc {
-	[ "$1" == "-h" ]&& echo 'irc irc.servidor 6667 clave "puerto local" `' && exit
+	[ "$1" == "-h" ]&& echo 'genera un proxy de un servidor de irc y cifra la conexion, ejemplo `irc irc.freenode.net 6697 clave 6667`' && exit
 	# archivo fifo temporal
 	MENSAJE="/tmp/$(pwgen -s -1 $[$RANDOM%10+6])"
 	mkfifo $MENSAJE 2> /dev/null
