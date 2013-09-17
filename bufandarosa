@@ -84,7 +84,7 @@ function irc {
 	# archivo fifo temporal
 	MENSAJE="/tmp/$(pwgen -s -1 $[$RANDOM%10+6])"
 	mkfifo $MENSAJE 2> /dev/null
-	cat $MENSAJE | sock $1 $2 | descifrar_irc $3 | nc -l $4 | cifrar_irc $2 > $MENSAJE
+	cat $MENSAJE | sock $1 $2 | descifrar_irc $3 | nc -l 127.0.0.1 $4 | cifrar_irc $2 > $MENSAJE
 }
 function desesteganografia {
 	[ "$1" == "-h" ]&& echo 'muestra el mensaje dentro de una archivo o un QR, ejemplo desesteganografia clave imagen`' && exit
@@ -392,7 +392,6 @@ case $MENU in
 		p=`clave $(pwgen -s -y -1 $[$RANDOM%10+6])` || exit
 		# puerto
 		puerto=`url "6667"` || exit
-		# cat $MENSAJE | nc $SERVIDOR | descifrar_irc $p | nc -l $puerto | cifrar_irc $p > $MENSAJE | zenity --window-icon=/usr/share/pixmaps/bufandarosa.png  --notification
 		irc $SERVIDOR "$p" "$puerto" | zenity --window-icon=/usr/share/pixmaps/bufandarosa.png  --notification --listen
 		# nota necesita icono
 	;;
