@@ -18,7 +18,7 @@ bash bufandarosa -u
 ## IRC cifrado
 
 Genera un desvío de cualquier servidor IRC, cifrando los mensajes de salida y descifrando los de entrada. 
-Por ejemplo podemos utilizar `irc.freenode.net` y la clave `1234` (esta se usara para el cifrado). 
+Por ejemplo podemos utilizar `irc.freenode.net` y la clave `1234`, esta se usa para el cifrado. 
 
 <pre>
 echo "irc 'irc.freenode.net 6667' 1234 6667" | bufandarosa -c
@@ -32,7 +32,7 @@ echo "irc 'irc.freenode.net 6667' 1234 6667" | bufandarosa -c
 
 Esta inspirado en el concepto de [dirtirc](http://dirtirc.sf.net), pero con un cifrado mucho más fuerte basado en `GPG`.
 
-**Nota:** NO anonimiza la conexión.
+**Nota:** NO anonimiza la conexión, solo nuestros mensajes.
 
 ## Vieja escuela
 
