@@ -23,7 +23,7 @@ Por ejemplo podemos utilizar `irc.freenode.net` y la clave `1234`.
 ![captura del programa](img/irc.png)
 > Captura de la configuración del IRC en pidgin
 
-Luego de levantar el proxy podemos debemos correr un cliente y conectarnos al canal `#bufandarosa` (por ejemplo).
+Luego de levantar el proxy debemos correr un cliente y conectarnos al canal `#bufandarosa` (por ejemplo).
 
 ![captura del programa](img/canal.png)
 > Captura de la configuración del canal en pidgin
