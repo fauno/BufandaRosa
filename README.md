@@ -23,16 +23,12 @@ Por ejemplo podemos utilizar `irc.freenode.net` y la clave `1234` (esta se usara
 <pre>
 echo "irc 'irc.freenode.net 6667' 1234 6667" | bufandarosa -c
 </pre>
-> Genera un desvío de freenode cifrado, tambien se puede hacer con la interfaz gráfica
-
 
 ![captura del programa](img/irc.png)
-> Captura de la configuración del IRC en pidgin
-
-Luego, debemos correr un cliente y conectarnos al canal `#bufandarosa` (por ejemplo).
+> Luego, debemos correr un cliente y conectarlo al servidor `127.0.0.1`
 
 ![captura del programa](img/canal.png)
-> Captura de la configuración del canal en pidgin
+> Conectarnos al canal `#bufandarosa` (por ejemplo).
 
 Esta inspirado en el concepto de [dirtirc](http://dirtirc.sf.net), pero con un cifrado mucho más fuerte basado en `GPG`.
 
