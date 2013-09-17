@@ -50,7 +50,7 @@ echo ayuda | bufandarosa -c
 
 ## Quehaceres
 
-* En IRC al enviar "\" no recibe nada, hay que cambiarlo por "\\"
+* En IRC al enviar "\" no recibe nada, hay que cambiarlo por "\\\\"
 * Imágenes al azar de diversas fuentes
 * Publicación de imágenes automática
 * Cifrar usando [OTR](http://www.cypherpunks.ca/otr/)
