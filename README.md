@@ -74,7 +74,7 @@ echo ayuda | bufandarosa -c
 </pre>
 > ayuda de la versión de terminal
 
-## Quehaceres
+## Lista de quehaceres
 
 * En IRC al enviar "\" no recibe nada, hay que cambiarlo por "\\\\"
 * Imágenes al azar de diversas fuentes
@@ -83,6 +83,7 @@ echo ayuda | bufandarosa -c
 * hacer que el cifrado del IRC sea multiparty (basado en OTR)
   * Cifrado y Descifrado con llave GPG `echo "hola" | gpg -r $ID -e - | gpg -r $ID --passphrase $CLAVE -d -`
   * ~~Tor para freenode~~ posiblemente con salto entre servidores
+* IRC como proxy y tuberias para hablar de modo ofuscado (l33t, errores de tipeo, disgrafía, etc)
 * Leer feed en busqueda de mensajes cifrados
 
 
