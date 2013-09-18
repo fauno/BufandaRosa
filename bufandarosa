@@ -64,11 +64,12 @@ function cifrar_irc {
 }
 function descifrar_irc {
 	while read SALIDA; do
-		if [ "$(echo $SALIDA | grep -i ' privmsg ')" ]; then
+		if [ "$(echo $SALIDA | grep -i ' privmsg ' | grep -v "`echo -e "\x01ACTION"`")" ]; then
 			A=`echo "$SALIDA" | sed 's/\ :.*$//g'`
 			B=`echo "$SALIDA" | sed 's/^:.*\ ://g' | descifrar "$1"`
 			# parche por que a veces anda mal
 			[ "$B" == "" ] && echo "$SALIDA [sin cifrar]" || echo "$A :$B"
+			echo "$SALIDA" > /dev/stderr
 		else
 			echo "$SALIDA"
 		fi
@@ -183,7 +184,7 @@ while getopts chiu OPCION; do
 		cp img/$NOMBRE.png /usr/share/pixmaps/
 		cp /tmp/$NOMBRE.desktop /usr/share/applications/$NOMBRE.desktop" > $TMP
 		echo "espera por favor"
-		$gksu "bash $TMP" > /dev/null 2> /dev/null
+		$gksu "bash $TMP" 2> /dev/null
 		rm $TMP
 		exit
 		;;
