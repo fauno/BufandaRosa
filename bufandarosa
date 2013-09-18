@@ -55,7 +55,7 @@ function cifrar_irc {
 	while read SALIDA; do
 		if [ "$(echo $SALIDA | grep -i '^privmsg ')" ]; then
 			A=`echo "$SALIDA" | sed 's/:.*$//g'`
-			B=`echo "$SALIDA" | sed 's/^.*://g' | cifrar "$*" -w0`
+			B=`echo "$SALIDA" | sed 's/^.*://g' | cifrar "$*" -w0` && echo "message: mensaje cifrado" > /dev/stderr
 			echo "$A:$B"
 		else
 			echo "$SALIDA"
@@ -66,7 +66,7 @@ function descifrar_irc {
 	while read SALIDA; do
 		if [ "$(echo $SALIDA | grep -i ' privmsg ' | grep $'\x01')" ]; then
 			A=`echo "$SALIDA" | sed 's/\ :.*$//g'`
-			B=`echo "$SALIDA" | sed 's/^:.*\ ://g' | descifrar "$1"`
+			B=`echo "$SALIDA" | sed 's/^:.*\ ://g' | descifrar "$1"` && echo "message: mensaje descifrado" > /dev/stderr
 			# parche por que a veces anda mal
 			[ "$B" == "" ] && echo "$SALIDA [sin cifrar]" || echo "$A :$B"
 			echo "$SALIDA" > /dev/stderr
@@ -345,7 +345,7 @@ case $MENU in
 	# Descifrar
 
 	# mensaje archivo o URL
-	MENU=`echo -e "Mensaje Archivo_o_Código_QR Dirección_web Llave_GPG" | opciones -t "Descifrar" -m "¿Dónde queres buscar?"` || exit
+	MENU=`echo -e "Mensaje Archivo_o_Código_QR Dirección_web" | opciones -t "Descifrar" -m "¿Dónde queres buscar?"` || exit
 	case $MENU in
 		0 )
 			# texto
@@ -393,7 +393,7 @@ case $MENU in
 		p=`clave $(pwgen -s -y -1 $[$RANDOM%10+6])` || exit
 		# puerto
 		puerto=`url "6667"` || exit
-		irc $SERVIDOR "$p" "$puerto" | zenity --window-icon=/usr/share/pixmaps/bufandarosa.png  --notification --listen
+		irc $SERVIDOR "$p" "$puerto" 2>&| zenity --window-icon=/usr/share/pixmaps/bufandarosa.png  --notification --listen
 		# nota necesita icono
 	;;
 	4 )
