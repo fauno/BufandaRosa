@@ -64,7 +64,7 @@ function cifrar_irc {
 }
 function descifrar_irc {
 	while read SALIDA; do
-		if [ "$(echo $SALIDA | grep -i ' privmsg ' | grep $'\x01')" ]; then
+		if [ "$(echo $SALIDA | grep -i ' privmsg ' | grep -v $'\x01')" ]; then
 			A=`echo "$SALIDA" | sed 's/\ :.*$//g'`
 			B=`echo "$SALIDA" | sed 's/^:.*\ ://g' | descifrar "$1"` && echo "message: mensaje descifrado" > /dev/stderr
 			# parche por que a veces anda mal
