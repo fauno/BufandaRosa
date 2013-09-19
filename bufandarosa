@@ -389,7 +389,7 @@ case $MENU in
 		p=`clave $(pwgen -s -y -1 $[$RANDOM%10+6])` || exit
 		# puerto
 		puerto=`url "6667"` || exit
-		irc $SERVIDOR "$p" "$puerto" | zenity --window-icon=/usr/share/pixmaps/bufandarosa.png  --notification --listen
+		irc $SERVIDOR "$p" "$puerto" 2>&| zenity --window-icon=/usr/share/pixmaps/bufandarosa.png  --notification --listen
 		# nota necesita icono
 	;;
 	4 )
