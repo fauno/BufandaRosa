@@ -1,9 +1,8 @@
 # ![captura del programa](img/bufandarosa.png) Bufanda Rosa
 
-
-Este programa permite **cifrar** y **descifrar** mensaje o archivos para: enviarlos por correo electrónico, publicarlo o compartir de modo anónimo (con TOR). 
+Este programa permite **cifrar** y **descifrar** mensaje o archivos para: enviarlos por correo electrónico, publicarlo o compartir de modo anónimo (con **TOR**). 
 También nos permitirá guardar información, de cualquier tipo, dentro de una **imagen**,  **archivo de audio** o generar códigos **QR** con el mensaje cifrado.
-Y chatear de modo cifrado en cualquier servidor de IRC.
+Y chatear de modo cifrado en cualquier servidor de **IRC**.
 
 ![captura del programa](img/cifrado.png)
 
@@ -17,15 +16,15 @@ bash bufandarosa -u
 
 ## Cifrado
 
-Cifra mensajes, archivos con la posibilidad de grabarlos, publicarlos de modo anónimo con **TOR**, salvarlo en **QR** u ocultar el mensaje en una imagen y varias cosas más.
+Cifra mensajes, archivos con la posibilidad de grabarlos, publicarlos de modo anónimo con **TOR**, salvarlo en **QR** u ocultar el mensaje en una imagen o archivos de audio.
 
 ## Descifrado
 
-Descifra mensajes cifrado con bufandarosa.
+Descifra mensajes cifrado con Bufanda Rosa.
 
 ## Publicación anónima
 
-Publica en un pastie usando TOR para su anonimato.
+Publica en un pastie usando **TOR** para su anonimato.
 
 **Nota:** una vez publicado el mensaje solo debe verse con **TOR** para no dejar rastros.
 
@@ -95,7 +94,7 @@ echo ayuda | bufandarosa -c
 * hacer que el cifrado del IRC sea multiparty (basado en OTR)
   * Cifrado y Descifrado con llave GPG `echo "hola" | gpg -r $ID -e - | gpg -r $ID --passphrase $CLAVE -d -`
   * ~~Tor para freenode~~ posiblemente con salto entre servidores
-* IRC como proxy y tuberias para hablar de modo ofuscado (l33t, errores de tipeo, h4x0r, disgrafía, etc)
+* IRC como proxy y tuberias para hablar de modo ofuscado (l33t, greeklish, errores de tipeo, h4x0r, disgrafía, etc)
 * En IRC al enviar "\" no recibe nada, hay que cambiarlo por "\\\\"
 * Leer feed en búsqueda de mensajes cifrados
 
