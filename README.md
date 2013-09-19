@@ -61,14 +61,24 @@ Borra cualquier archivo sin dejar rastros.
 
 ====
 
-## Vieja escuela
+## Vieja escuela (o versión cli)
 
 Linea de comandos para Bufanda Rosa.
+
+~~~
+bufandarosa -c
+~~~
+> terminal de Bufanda Rosa
 
 ~~~
 echo "echo 'hola mundo' | pastie" | bufandarosa -c
 ~~~
 > publica `hola mundo` en un pastie de modo anónimo
+
+~~~
+echo 'echo "hola" | cifrar clave | descifrar clave' | bufandarosa -c
+~~~
+> cifra y descifra un mensaje con clave
 
 ~~~
 echo ayuda | bufandarosa -c
