@@ -62,6 +62,11 @@ function cifrar_irc {
 		fi
 	done
 }
+
+function l33t {
+	se
+}
+
 function descifrar_irc {
 	while read SALIDA; do
 		if [ "$(echo $SALIDA | grep -i ' privmsg ' | grep -v $'\x01')" ]; then
@@ -174,6 +179,7 @@ while getopts chiu OPCION; do
 		$aptitude qrencode
 		$aptitude wgetpaste
 		$aptitude gnutls-utils
+		$aptitude gnutls-bin
 		$aptitude netcat-openbsd || $aptitude gnu-netcat
 		cp $NOMBRE /usr/bin/
 		[ ! "$(which wgetpaste)" ] && cp wgetpaste /usr/bin/
@@ -389,7 +395,7 @@ case $MENU in
 		p=`clave $(pwgen -s -y -1 $[$RANDOM%10+6])` || exit
 		# puerto
 		puerto=`url "6667"` || exit
-		irc $SERVIDOR "$p" "$puerto" 2>&| zenity --window-icon=/usr/share/pixmaps/bufandarosa.png  --notification --listen
+		irc $SERVIDOR "$p" "$puerto" 2>&1| zenity  --window-icon=/usr/share/pixmaps/bufandarosa.png  --notification --listen
 		# nota necesita icono
 	;;
 	4 )
