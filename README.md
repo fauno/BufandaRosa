@@ -14,19 +14,21 @@ wget https://raw.github.com/b4zz4/BufandaRosa/master/bufandarosa
 bash bufandarosa -u
 ~~~
 
+=======
+
 ## Cifrado
 
-Cifra mensajes, archivos con la posibilidad de grabarlos, publicarlos de modo anónimo con **TOR**, salvarlo en **QR** u ocultar el mensaje en una imagen o archivos de audio.
+Cifra mensajes, archivos con la posibilidad de grabarlos, salvarlo en **QR** u ocultar el mensaje en una imagen o archivos de audio y publicarlos de modo anónimo con **TOR**.
 
 ## Descifrado
 
-Descifra mensajes cifrado con Bufanda Rosa.
+Descifra mensajes cifrado con **Bufanda Rosa**.
 
 ## Publicación anónima
 
 Publica en un pastie usando **TOR** para su anonimato.
 
-**Nota:** una vez publicado el mensaje solo debe verse con **TOR** para no dejar rastros.
+_**Nota:** una vez publicado el mensaje solo debe verse con **TOR** para no dejar rastros._
 
 ## IRC cifrado
 
@@ -46,13 +48,13 @@ echo "irc irc.freenode.net 6697 1234 6667" | bufandarosa -c
 
 Esta inspirado en el concepto de [dirtirc](http://dirtirc.sf.net), pero con un cifrado mucho más fuerte basado en [GPG](http://www.gnupg.org/index.es.html).
 
-**Nota:** NO anonímiza la conexión, solo nuestros mensajes.
+_**Nota:** NO anonímiza la conexión, solo nuestros mensajes._
 
 ## Quitar metadatos
 
 Elimina los metadatos de una archivo e intenta generar "ruido" para que sea imposible detectar su origen.
 
-**Nota:** La generación de "ruido" es experimental.
+_**Nota:** La generación de "ruido" es experimental._
 
 ## Eliminar archivos
 
