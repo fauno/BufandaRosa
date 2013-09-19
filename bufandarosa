@@ -150,23 +150,20 @@ while getopts chiu OPCION; do
 	i)
 		NOMBRE=`basename $0`
 		#echo "$NOMBRE no está instalado" | mostrar
-		echo -e "[Desktop Entry]\nName=$NOMBRE\nDescription=No tengo nada que ocultar, pero sí mucho que proteger\nIcon=$NOMBRE\nType=Application\nExec=$NOMBRE\nCategories=GTK;Utility;" > /tmp/$NOMBRE.desktop
+		echo -e "[Desktop Entry]\nName=Bufanda Rosa\nDescription=No tengo nada que ocultar, pero sí mucho que proteger\nIcon=$NOMBRE\nType=Application\nExec=$NOMBRE\nCategories=GTK;Utility;" > /tmp/$NOMBRE.desktop
 		# dependencias
 		TMP=$(mktemp)
 
 		# verifica el sistema operativo
-		if [ "$(which yum)" ]; then
-			aptitude="yum -y install"
-		elif [ "$(which pacman)" ]; then
-			aptitude="pacman -S"
-		else
+		[ "$(which yum)" ] && aptitude="yum -y install" ||\
+		[ "$(which pacman)" ] && aptitude="pacman -S" ||\
 		aptitude="apt-get -y install"
-		fi
-		if [ "$(which gksu)" ]; then
-			gksu="gksu"
-		else
-			gksu="su -c"
-		fi
+
+		# permiso de superusuario
+		[ "$(which su)" ]   && gksu="su -c"
+		[ "$(which sudo)" ] && gksu="sudo"
+		[ "$(which gksu)" ] && gksu="gksu"
+
 		echo "$aptitude imagemagick
 		$aptitude steghide
 		$aptitude zenity
@@ -176,9 +173,8 @@ while getopts chiu OPCION; do
 		$aptitude zbar-tools
 		$aptitude qrencode
 		$aptitude wgetpaste
-		$aptitude nc
 		$aptitude gnutls-utils
-		$aptitude gnu-netcat
+		$aptitude netcat-openbsd || $aptitude gnu-netcat
 		cp $NOMBRE /usr/bin/
 		[ ! "$(which wgetpaste)" ] && cp wgetpaste /usr/bin/
 		cp img/$NOMBRE.png /usr/share/pixmaps/

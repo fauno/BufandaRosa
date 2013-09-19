@@ -17,14 +17,13 @@ bash bufandarosa -u
 
 ## Cifrado
 
-Cifra mensajes, archivos con la posibilidad de grabarlos, publicarlos, salvarlo en QR, etc.
-Con la posibilidad de publicar usando **TOR**.
+Cifra mensajes, archivos con la posibilidad de grabarlos, publicarlos de modo anónimo con **TOR**, salvarlo en **QR** u ocultar el mensaje en una imagen y varias cosas más.
 
 ## Descifrado
 
 Descifra mensajes cifrado con bufandarosa.
 
-## Publicacón anonima
+## Publicación anónima
 
 Publica en un pastie usando TOR para su anonimato.
 
@@ -38,27 +37,29 @@ Por ejemplo podemos utilizar `irc.freenode.net` y la clave de cifrado `1234`.
 <pre>
 echo "irc irc.freenode.net 6697 1234 6667" | bufandarosa -c
 </pre>
-> Esto tambien se puede hacer con la interfaz gráfica
+> Esto también se puede hacer con la interfaz gráfica
 
 ![captura del programa](img/irc.png)
-> Luego, debemos correr un cliente (por ejemplo [Pidgin](https://pidgin.im/)) y conectarlo al servidor `127.0.0.1`
+> Luego, debemos correr un cliente de IRC (por ejemplo [Pidgin](https://pidgin.im/)) y conectarlo al servidor `127.0.0.1`
 
 ![captura del programa](img/canal.png)
 > Conectarnos al canal `#bufandarosa` (por ejemplo).
 
 Esta inspirado en el concepto de [dirtirc](http://dirtirc.sf.net), pero con un cifrado mucho más fuerte basado en [GPG](http://www.gnupg.org/index.es.html).
 
-**Nota:** NO anonimiza la conexión, solo nuestros mensajes.
+**Nota:** NO anonímiza la conexión, solo nuestros mensajes.
 
 ## Quitar metadatos
 
-Elimina los metadatos de una archivo e intenta generar ruido para que sea imposible detectar su origen.
+Elimina los metadatos de una archivo e intenta generar "ruido" para que sea imposible detectar su origen.
 
-**Nota:** La generación de ruido es experimental.
+**Nota:** La generación de "ruido" es experimental.
 
 ## Eliminar archivos
 
 Borra cualquier archivo sin dejar rastros.
+
+~~~~
 
 ## Vieja escuela
 
@@ -67,16 +68,17 @@ Linea de comandos para Bufanda Rosa.
 <pre>
 echo "echo 'hola mundo' | pastie" | bufandarosa -c
 </pre>
-> publica `hola mundo` en un pastie de modo anonimo
+> publica `hola mundo` en un pastie de modo anónimo
 
 <pre>
 echo ayuda | bufandarosa -c
 </pre>
 > ayuda de la versión de terminal
 
+~~~~
+
 ## Lista de quehaceres
 
-* En IRC al enviar "\" no recibe nada, hay que cambiarlo por "\\\\"
 * Imágenes al azar de diversas fuentes
 * Publicación de imágenes automática
 * Cifrar usando [OTR](http://www.cypherpunks.ca/otr/)
@@ -84,8 +86,8 @@ echo ayuda | bufandarosa -c
   * Cifrado y Descifrado con llave GPG `echo "hola" | gpg -r $ID -e - | gpg -r $ID --passphrase $CLAVE -d -`
   * ~~Tor para freenode~~ posiblemente con salto entre servidores
 * IRC como proxy y tuberias para hablar de modo ofuscado (l33t, errores de tipeo, h4x0r, disgrafía, etc)
-* Leer feed en busqueda de mensajes cifrados
-
+* En IRC al enviar "\" no recibe nada, hay que cambiarlo por "\\\\"
+* Leer feed en búsqueda de mensajes cifrados
 
 # Wgetpaste
 
