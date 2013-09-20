@@ -20,11 +20,6 @@ function metadatos {
 	[ "$1" == "-h" ]&& echo 'borra los metadatos de un archivo, ejemplo: metadatos archivo.jpg ' && exit
 	convert -strip "$1" "$1"
 }
-function tinyurl {
-	[ "$1" == "-h" ]&& echo 'publica un archivo o mensaje en tinyurl (tiene espacio limitado), ejemplo: echo "hola" | tinyurl ' && exit
-	descarga "https://tinyurl.com/create.php?url=data:text/html;charset=utf-8;base64,$1" \
-	| grep -o "https\?://[^\"']\+" | sed 's/[<|\ ].*$//g' | grep "//tinyurl.com/..*" |  sort -u
-}
 function borrar {
 	[ "$1" == "-h" ]&& echo 'borra un archivo (para simple), ejemplo: ' && exit
 	shred -uz -n 10 "$1"
@@ -35,27 +30,31 @@ function nombre {
 }
 function paste {
 	[ "$1" == "-h" ]&& echo 'envia un mensaje a un paste al azar usando tor, ejemplo: `echo "hola" | paste`' && exit
-	f=`mktemp`
-	cat /dev/stdin > $f
-	publicar $f paste
-	borrar $f
+	publicar
+}
+function tinyurl {
+	[ "$1" == "-h" ]&& echo 'publica un archivo o mensaje en tinyurl (tiene espacio limitado), ejemplo: echo "hola" | tinyurl ' && exit
+	descarga "https://tinyurl.com/create.php?url=data:text/html;charset=utf-8;base64,$1" \
+	| grep -o "https\?://[^\"']\+" | sed 's/[<|\ ].*$//g' | grep "//tinyurl.com/..*" |  sort -u
 }
 function publicar {
 	[ "$1" == "-h" ]&& echo 'envia un archivo a un servidor de archivos al azar usando tor, ejemplo: `publicar imagen.png uploadpie`' && exit
 
 	# elige una subidor al azar
 	OPCION=`echo $2 || echo "imgur uploadpie" | uno`
-	f=$1
+	[ "$1" == "" ] && f=`mktemp`; cat /dev/stdin > $f || f=$1
 
 	# verificar si un gif, jpg, png tiene más de 3M subir a imgur
 
 	# excepcion si es un txt (md, markdown) o pdf
 	# cualquier archivo desconocido convertir en txt :P
 	[ ! "$(echo $f | grep "\.\(png\|gif\|jpeg\|jpg\|pdf\|txt\)$")" ] && cp $f $f.txt && f=$f.txt
+
 	# pdf: uploadpie
-	[ "$(echo $f | grep "\.pdf$")" ] && echo "uploadpie" | uno
-	# txt: uploadpie o paste
-	[ "$(echo $f | grep "\.txt$")" ] && echo "paste paste uploadpie" | uno
+	[ "$(echo $f | grep "\.pdf$")" ] && OPCION=`echo "uploadpie" | uno`
+
+	# txt: uploadpie o paste (3 de 4)
+	[ "$(echo $f | grep "\.txt$")" ] && OPCION=`echo "paste paste paste uploadpie" | uno`
 
 	# imgur (gif, png, jpg)
 	[ "$OPCION" == "imgur" ] && proxychains curl -F "file=@$f" http://imgur.com/upload \
@@ -65,19 +64,24 @@ function publicar {
 	[ "$OPCION" == "uploadpie" ] && proxychains curl -F upload=1 -F "uploadedfile=@$f" -F expire=5 -# http://uploadpie.com/ \
 	| grep -o 'http://uploadpie.com/[^\" ]*' | grep http://uploadpie.com/...
 
+	# principalmente para texto
 	[ "$OPCION" == "paste" ] && proxychains wgetpaste -g -v -r -n "`nombre`" \
 	-s `echo "bpaste codepad dpaste gists poundpython" | uno` $f \
 	| grep -o "https\?://[^\"']\+" | tail -n 1
 
+	# copado para mensajes cifrados y descifrar online
+	[ "$OPCION" == "tinyurl" ] && cat $f | tinyurl
+
 	# borra el archivo generado por bufandarosa
-	borrar "$1.txt"
+	[ -f "$1.txt" ] && borrar "$1.txt"
+	[ "$1" == "" ] && borrar "$f"
 }
 function cifrar {
-	[ "$1" == "-h" ]&& echo 'cifra mensajes, ejmplo `echo "hola" | cifrar clave`' && exit
+	[ "$1" == "-h" ]&& echo 'cifra mensajes, ejemplo `echo "hola" | cifrar clave`' && exit
 	gpg -c --passphrase "$1" 2> /dev/null | base64 -w20 $2
 }
 function descifrar {
-	[ "$1" == "-h" ]&& echo 'descifra mensajes, ejmplo `echo "hola" | cifrar clave | descifrar clave`' && exit
+	[ "$1" == "-h" ]&& echo 'descifra mensajes, ejemplo `echo "hola" | cifrar clave | descifrar clave`' && exit
 	tr "\n" " " | sed -e :a -e 's/<[^>]*>//g;/</N;//ba' \
 	| sed 's/[^0-9A-Za-z=\/+-]//g' | base64 -d | gpg -d --passphrase "$1"
 }
@@ -314,7 +318,7 @@ case $MENU in
 		;;
 	esac
 	k=`clave $(pwgen -s -y -1 $[$RANDOM%10+6])`
-	MENU=`echo -e "Texto Imágen_o_Audio Imágen_al_azar_de_la_web Publicar_en_TinyURL Publicar_en_paste Código_QR" | opciones -t "¿En donde?" -m "¿Donde lo queres ocultar?"` || exit
+	MENU=`echo -e "Texto Imágen_o_Audio Imágen_al_azar_de_la_web Publicar_en_TinyURL Publicar Código_QR" | opciones -t "¿En donde?" -m "¿Donde lo queres ocultar?"` || exit
 	case $MENU in
 		0 )
 		# genera el mensaje y lo muestra en base64
@@ -335,8 +339,8 @@ case $MENU in
 		cf="`nombre`.jpg"
 		for W in {1,2,3}; do
 			# fuentes RSS
-			FUENTE=`echo -e "http://ycpi.api.flickr.com/services/feeds/photos_public.gne\n\
-			http://www.nasa.gov/rss/lg_image_of_the_day.rss\n\
+			FUENTE=`echo -e "http://ycpi.api.flickr.com/services/feeds/photos_public.gne \
+			http://www.nasa.gov/rss/lg_image_of_the_day.rss \
 			http://backend.deviantart.com/rss.xml" | uno`
 			# url de la imagen
 			img_url=`descarga $FUENTE\
@@ -372,7 +376,7 @@ case $MENU in
 		;;
 		4 )
 			# genera el mensaje, lo publica y lo muestra en base64
-			echo "$ef" | cifrar "$k" | publicar paste | progreso | mostrar
+			echo "$ef" | cifrar "$k" | paste | progreso | mostrar
 			exit
 	   	;;
 		5)
@@ -428,7 +432,7 @@ case $MENU in
 	;;
 	2 )
 		# publicacion anonima
-		mensaje | publicar paste | progreso | mostrar
+		mensaje | paste | progreso | mostrar
 	;;
 	3 )
 		# proxy IRC cifrado - basado en el concepto de dirtirc

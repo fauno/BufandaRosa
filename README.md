@@ -91,7 +91,7 @@ echo ayuda | bufandarosa -c
 ## Lista de quehaceres
 
 * Imágenes al azar más diversas fuentes
-* Publicación de imágenes, QR y archivos de modo automática
+* Publicación de imágenes, QR y archivos de modo automática (ya comence este pendiente)
 * Cifrar usando [OTR](http://www.cypherpunks.ca/otr/)
 * hacer que el cifrado del IRC sea multiparty (basado en OTR)
   * Cifrado y Descifrado con llave GPG `echo "hola" | gpg -r $ID -e - | gpg -r $ID --passphrase $CLAVE -d -`
