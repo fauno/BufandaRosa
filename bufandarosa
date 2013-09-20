@@ -42,20 +42,38 @@ function pastie {
 	$f | grep -o "https\?://[^\"']\+" | tail -n 1
 	borrar $f
 }
+function img {
+	# imgur
+	curl -F "file=@$1" http://imgur.com/upload | sed 's/^.*,"hash":"/http:\/\/imgur.com\//g; s/".*$//g'
+	# uploadpie
+	curl -F upload=1 -F "uploadedfile=@$1" -F expire=5 -# http://uploadpie.com/ \
+	| grep -o 'http://uploadpie.com/[^\" ]*' | grep http://uploadpie.com/...
+}
 function cifrar {
 	[ "$1" == "-h" ]&& echo 'cifra mensajes, ejmplo `echo "hola" | cifrar clave`' && exit
-	cat /dev/stdin | gpg -c --passphrase "$1" 2> /dev/null | base64 -w20 $2
+	gpg -c --passphrase "$1" 2> /dev/null | base64 -w20 $2
 }
 function descifrar {
 	[ "$1" == "-h" ]&& echo 'descifra mensajes, ejmplo `echo "hola" | cifrar clave | descifrar clave`' && exit
-	cat /dev/stdin | tr "\n" " " | sed -e :a -e 's/<[^>]*>//g;/</N;//ba' \
+	tr "\n" " " | sed -e :a -e 's/<[^>]*>//g;/</N;//ba' \
 	| sed 's/[^0-9A-Za-z=\/+-]//g' | base64 -d | gpg -d --passphrase "$1"
+}
+function l33t {
+	tr 'A-Z' 'a-z' |\
+	sed 'y/aeiotbs0gil/4310785O911/' |\
+	tr 'a-z' 'A-Z'
+}
+
+function ofuscar {
+	tr 'A-Z' 'a-z' |\
+	sed 'y/abcdefghijklmnħopqrstuvwxyz1234567890/ɐß¢Ð€ƒ9ħ¡jĸ|MŋñøþqR§†µ^W×¥łı23456Ŧ89ø/'
+
 }
 function cifrar_irc {
 	while read SALIDA; do
 		if [ "$(echo $SALIDA | grep -i '^privmsg ')" ]; then
 			A=`echo "$SALIDA" | sed 's/:.*$//g'`
-			B=`echo "$SALIDA" | sed 's/^.*://g' | cifrar "$*" -w0` && echo "message: mensaje cifrado" > /dev/stderr
+			B=`echo "$SALIDA" | sed 's/^.*://g' |  l33t ` #| cifrar "$*" -w0`
 			echo "$A:$B"
 		else
 			echo "$SALIDA"
@@ -63,15 +81,11 @@ function cifrar_irc {
 	done
 }
 
-function l33t {
-	se
-}
-
 function descifrar_irc {
 	while read SALIDA; do
 		if [ "$(echo $SALIDA | grep -i ' privmsg ' | grep -v $'\x01')" ]; then
 			A=`echo "$SALIDA" | sed 's/\ :.*$//g'`
-			B=`echo "$SALIDA" | sed 's/^:.*\ ://g' | descifrar "$1"` && echo "message: mensaje descifrado" > /dev/stderr
+			B=`echo "$SALIDA" | sed 's/^:.*\ ://g' | descifrar "$1"`
 			# parche por que a veces anda mal
 			[ "$B" == "" ] && echo "$SALIDA [sin cifrar]" || echo "$A :$B"
 			echo "$SALIDA" > /dev/stderr
@@ -82,15 +96,19 @@ function descifrar_irc {
 }
 
 function sock {
-	[ "$1" == "-h" ]&& echo 'conecta a un servidor usando SSL o no, ejemplo `sock servidor puerto`' && exit
-	gnutls-cli $1 --port $2 --debug 0 || nc $1 $2 || exit
+	[ "$1" == "-h" ]&& echo 'conecta a un servidor usando SSL o sin él, ejemplo `sock servidor puerto`' && exit
+	 gnutls-cli $1 --port $2 || nc $1 $2 || telnet $1 $2 || exit
+}
+function proxy {
+	[ "$1" == "-h" ]&& echo 'levanta un proxy local, ejemplo `proxy puerto`' && exit
+	nc -l 127.0.0.1 $1
 }
 function irc {
 	[ "$1" == "-h" ]&& echo 'genera un proxy de un servidor de irc y cifra la conexion, ejemplo `irc irc.freenode.net 6697 clave 6667`' && exit
 	# archivo fifo temporal
 	MENSAJE="/tmp/$(pwgen -s -1 $[$RANDOM%10+6])"
 	mkfifo $MENSAJE 2> /dev/null
-	cat $MENSAJE | sock $1 $2 | descifrar_irc $3 | nc -l 127.0.0.1 $4 | cifrar_irc $2 > $MENSAJE
+	cat $MENSAJE | sock $1 $2 | descifrar_irc $3 | proxy $4 | cifrar_irc $2 > $MENSAJE
 }
 function desesteganografia {
 	[ "$1" == "-h" ]&& echo 'muestra el mensaje dentro de una archivo o un QR, ejemplo desesteganografia clave imagen`' && exit
@@ -98,7 +116,7 @@ function desesteganografia {
 }
 function esteganografia {
 	[ "$1" == "-h" ]&& echo 'guarda un mensaje dentro de una archivo, ejemplo `echo 'hola' | esteganografia clave imagen`' && exit
-	cat /dev/stdin | steghide embed -ef - -p "$k" -cf "$cf"
+	steghide embed -ef - -p "$k" -cf "$cf"
 }
 function descarga {
 	# me gustaria convertir esto en GET
@@ -113,7 +131,7 @@ function ayuda {
 	echo "Bufanda Rosa"
 	echo "============"
 	echo
-	funciones="basura cifrar descarga descifrar nombre pastie tinyurl uno irc"
+	funciones="basura cifrar descarga descifrar nombre pastie tinyurl uno irc sock"
 	for N in $funciones; do
 		echo " $N		`$N -h`"
 	done
@@ -454,10 +472,3 @@ exit
 		# "http://www.cjb.net/"=>{"image"=>"____"},
    		# "http://kimag.es/"=>{"userfile1"=>"____"},
 		# "http://tinypic.com/"=>{"the_file"=>$ARGV[0]}
-		# "http://uploadpie.com/"=>{"uploadedfile"=>$ARGV[0]}
-		# "http://imgur.com/"=>{'file[]'=>$ARGV[0]}
-		# fileinput # archivo
-		# expire=4 # un dia
-		# http://uploadpie.com/
-
-
