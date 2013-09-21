@@ -99,7 +99,11 @@ echo ayuda | bufandarosa -c
 * IRC como proxy y tuberias para hablar de modo ofuscado (l33t, greeklish, errores de tipeo, h4x0r, disgrafía, etc)
 * En IRC al enviar "\" no recibe nada, hay que cambiarlo por "\\\\"
 * Leer feed en búsqueda de mensajes cifrados
+* Cifrado para poner en una URL, ejemplo: `data:text/html;charset=utf-8,<script>response=prompt("","¿Cual es mi color favorito?"); desciframe ("base64", response)</script>`
+
 
 # Wgetpaste
 
 Intento mantener la ultima versión. [Sitio original](http://wgetpaste.zlin.dk/)
+
+
