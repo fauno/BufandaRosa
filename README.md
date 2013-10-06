@@ -95,7 +95,8 @@ echo "echo mensaje cifrado y almacenado en un QR | cifrar 1234 | qr | publicar" 
 > Guardar un mensaje cifrado con clave `1234` dentro de un QR
 
 ~~~
-echo "descarga https://raw.github.com/b4zz4/BufandaRosa/master/img/qr.png | descifrar 1234 " | bufandarosa -c
+echo "descarga https://raw.github.com/b4zz4/BufandaRosa/master/img/qr.png | descifrar 1234 " \
+| bufandarosa -c
 ~~~
 > Descarga la imagen del QR y la descifra con la clave `1234`
 
