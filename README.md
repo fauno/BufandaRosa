@@ -92,7 +92,12 @@ por computadoras y facil para humanos | viagra | publicar" | bufandarosa -c
 ~~~
 echo "echo mensaje cifrado y almacenado en un QR | cifrar 1234 | qr | publicar" | bufandarosa -c 
 ~~~
-> Guardar un mensaje cifrado dentro de un QR
+> Guardar un mensaje cifrado con clave `1234` dentro de un QR
+
+~~~
+echo "descargar https://raw.github.com/b4zz4/BufandaRosa/master/img/qr.png | descifrar 1234 " | bufandarosa -c
+~~~
+> Descarga la imagen del QR y la descifra con la clave `1234`
 
 ~~~
 echo ayuda | bufandarosa -c
