@@ -88,14 +88,10 @@ por computadoras y facil para humanos | viagra | publicar" | bufandarosa -c
 ~~~
 > Ofuscado de texto usando pixels (estilo publicada de viagra)
 
-
 ~~~
 echo ayuda | bufandarosa -c
 ~~~
 > ayuda de la versión de terminal
-
-
-
 
 =====
 
@@ -104,9 +100,7 @@ echo ayuda | bufandarosa -c
 * Imágenes al azar más diversas fuentes
 * Publicación de imágenes, QR y archivos de modo automática (ya comence este pendiente)
 * Cifrar usando [OTR](http://www.cypherpunks.ca/otr/)
-* hacer que el cifrado del IRC sea multiparty (basado en OTR)
-  * Cifrado y Descifrado con llave GPG `echo "hola" | gpg -r $ID -e - | gpg -r $ID --passphrase $CLAVE -d -`
-  * ~~Tor para freenode~~ posiblemente con salto entre servidores
+  * hacer que el cifrado del IRC sea multiparty (basado en OTR)
 * IRC como proxy y tuberias para hablar de modo ofuscado (l33t, greeklish, errores de tipeo, h4x0r, disgrafía, etc)
 * En IRC al enviar "\" no recibe nada, hay que cambiarlo por "\\\\"
 * Leer feed en búsqueda de mensajes cifrados
