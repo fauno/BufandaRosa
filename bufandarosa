@@ -41,14 +41,31 @@ function publicar {
 	[ "$1" == "-h" ]&& echo 'envia un archivo a un servidor de archivos al azar usando tor, ejemplo: `publicar imagen.png uploadpie`' && exit
 
 	# elige una subidor al azar
-	OPCION=`echo $2 || echo "imgur uploadpie" | uno`
-	[ "$1" == "" ] && f=`mktemp`; cat /dev/stdin > $f || f=$1
+	OPCION=`[ ! "$2" == "" ] && echo $2 || echo "imgur uploadpie" | uno`
+	echo $OPCION > /dev/stderr
+
+	# genera el archivo basado en el standar imput y le genera una extension
+	if [ "$1" == "" ]; then
+		f=`mktemp`
+		cat /dev/stdin > $f
+		# genera una extension para generar la tuberia
+		EXT=`file -i $f | sed 's/^.*\/\(.*\);.*$/\1/g; s/\ //g'`
+		mv $f "$f.$EXT"
+		f="$f.$EXT"
+		echo $f > /dev/stderr
+
+	else
+		f=$1
+	fi
 
 	# verificar si un gif, jpg, png tiene más de 3M subir a imgur
 
 	# excepcion si es un txt (md, markdown) o pdf
 	# cualquier archivo desconocido convertir en txt :P
 	[ ! "$(echo $f | grep "\.\(png\|gif\|jpeg\|jpg\|pdf\|txt\)$")" ] && cp $f $f.txt && f=$f.txt
+
+	echo $f > /dev/stderr
+	echo $OPCION > /dev/stderr
 
 	# pdf: uploadpie
 	[ "$(echo $f | grep "\.pdf$")" ] && OPCION=`echo "uploadpie" | uno`
@@ -97,6 +114,7 @@ function ofuscar {
 
 }
 function viagra {
+	[ "$1" == "-h" ]&& echo 'ofusca un mensaje usando pixel, ejemplo `echo "hola" | viagra > imagen.png`' && exit
 	# fuente al azar
 	FONT=`convert -list font | grep Font | cut -d":" -f2 | sed 's/\ //g' | uno`
 	# convierte el texto a imagen
