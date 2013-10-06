@@ -42,8 +42,6 @@ function publicar {
 
 	# elige una subidor al azar
 	OPCION=`[ ! "$2" == "" ] && echo $2 || echo "imgur uploadpie" | uno`
-	echo $OPCION > /dev/stderr
-
 	# genera el archivo basado en el standar imput y le genera una extension
 	if [ "$1" == "" ]; then
 		f=`mktemp`
@@ -52,8 +50,6 @@ function publicar {
 		EXT=`file -i $f | sed 's/^.*\/\(.*\);.*$/\1/g; s/\ //g'`
 		mv $f "$f.$EXT"
 		f="$f.$EXT"
-		echo $f > /dev/stderr
-
 	else
 		f=$1
 	fi
@@ -63,9 +59,6 @@ function publicar {
 	# excepcion si es un txt (md, markdown) o pdf
 	# cualquier archivo desconocido convertir en txt :P
 	[ ! "$(echo $f | grep "\.\(png\|gif\|jpeg\|jpg\|pdf\|txt\)$")" ] && cp $f $f.txt && f=$f.txt
-
-	echo $f > /dev/stderr
-	echo $OPCION > /dev/stderr
 
 	# pdf: uploadpie
 	[ "$(echo $f | grep "\.pdf$")" ] && OPCION=`echo "uploadpie" | uno`
@@ -113,6 +106,13 @@ function ofuscar {
 	sed 'y/abcdefghijklmnħopqrstuvwxyz1234567890/ɐß¢Ð€ƒ9ħ¡jĸ|MŋñøþqR§†µ^W×¥łı23456Ŧ89ø/'
 
 }
+
+function qr {
+	f=`mktemp`
+	cat /dev/stdin > $f
+	qrencode "$f" -o -
+}
+
 function viagra {
 	[ "$1" == "-h" ]&& echo 'ofusca un mensaje usando pixel, ejemplo `echo "hola" | viagra > imagen.png`' && exit
 	# fuente al azar
@@ -411,7 +411,7 @@ case $MENU in
 	                # genera codigo QR
 			cd $PICTURES
 			sf=`nombre`.png
-			qrencode -o "$sf" "$(echo "$ef" | cifrar "$k" -w0)" || error "Los QR tienen espacio limitado :(" && exit
+			echo "$ef" | cifrar "$k" -w0 | qr > "$sf" || error "Los QR tienen espacio limitado :(" && exit
 			metadatos "$sf"
 			echo "$(pwd)/$sf" | mostrar "Código QR generado"
 			publicar "$sf" | mostrar "URL de publicación"

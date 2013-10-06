@@ -88,6 +88,12 @@ por computadoras y facil para humanos | viagra | publicar" | bufandarosa -c
 ~~~
 > Ofuscado de texto usando pixels (estilo publicada de viagra)
 
+![Mensaje de texto](img/qr.png)
+~~~
+echo "echo mensaje cifrado y almacenado en un QR | cifrar 1234 | qr | publicar" | bufandarosa -c 
+~~~
+> Guardar un mensaje cifrado dentro de un QR
+
 ~~~
 echo ayuda | bufandarosa -c
 ~~~
