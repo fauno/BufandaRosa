@@ -108,6 +108,7 @@ function ofuscar {
 }
 
 function qr {
+	[ "$1" == "-h" ]&& echo 'genera un qr con un mensaje, ejemplo `echo "hola" | cifrar 1234 | qr > imagen.png`' && exit
 	f=`mktemp`
 	cat /dev/stdin > $f
 	qrencode "$f" -o -
