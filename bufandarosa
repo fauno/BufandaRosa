@@ -120,7 +120,8 @@ function viagra {
 	FONT=`convert -list font | grep Font | cut -d":" -f2 | sed 's/\ //g' | uno`
 	# convierte el texto a imagen
 	cat /dev/stdin | col -b | expand \
-	| convert -size 400 +noise Impulse -pointsize $[$RANDOM%5+14] -font $FONT caption:@- -contrast -colors 6 -delete 1--1 -quality 0 -threshold 30% png:-
+	| convert -size 750 +noise Impulse -pointsize $[$RANDOM%5+14] -font $FONT caption:@- -contrast -colors 6 \
+	-delete 1--1 -quality 0 -threshold 30% png:-
 }
 
 function cifrar_irc {
@@ -167,11 +168,26 @@ function irc {
 # http://www.imagemagick.org/Usage/transform/ mirar a este software
 function desesteganografia {
 	[ "$1" == "-h" ]&& echo 'muestra el mensaje dentro de una archivo o un QR, ejemplo desesteganografia clave imagen`' && exit
-	zbarimg --raw -q "$2" | descifrar "$1" || steghide extract -p "$1" -sf "$2" -xf -
+	# no se usa mas
+	zbarimg --raw -q "$f" | descifrar "$1" || steghide extract -p "$1" -sf "$f" -xf - || cat "$2" | descifrar "$1"
 }
 function esteganografia {
 	[ "$1" == "-h" ]&& echo 'guarda un mensaje dentro de una archivo, ejemplo `echo 'hola' | esteganografia clave imagen`' && exit
-	steghide embed -ef - -p "$k" -cf "$cf"
+	# nombre del archivo
+	f="$2"
+	# si el formato no coincide lo convierte
+	if [ ! "" == "$(file -i "$2" | grep -i "\/\(jpe\?g\|bmp\|wav\|au\)$")" ]; then
+		# convierte imagen a jpg || convierte audio a wav
+		if [ "" == "$(file -i "$2" | grep 'image/')" ]; then
+			convert "$2" "$f.jpg"
+			f="$f.jpg"
+		else
+			ffmpeg -i "$2" "$f.wav"
+			f="$f.wav"
+		fi
+	fi
+	# embebe el mensaje
+	steghide embed -ef - -p "$1" -cf "$f"
 }
 # ---------------
 function descarga {
@@ -460,7 +476,7 @@ case $MENU in
 	# descifrado generico
 	p=`clave`
 
-	echo "`desesteganografia "$p" $sf || cat $sf | descifrar "$p"`" | mostrar
+	echo "`desesteganografia "$p" "$sf" | cat $sf | descifrar "$p"`" | mostrar
 	borrar $sf 2> /dev/null
 
 	;;
