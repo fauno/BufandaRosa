@@ -189,7 +189,7 @@ function ayuda {
 	echo
 	funciones="basura cifrar descarga descifrar nombre paste tinyurl uno irc sock"
 	for N in $funciones; do
-		echo " $N		`$N -h`"
+		echo " $N			`$N -h`"
 	done
 }
 function progreso {
@@ -201,7 +201,12 @@ function progreso {
 while getopts chiu OPCION; do
         case $OPCION in
 	c)
-		eval "$(cat /dev/stdin)"
+
+		cat /dev/stdin \
+		| while read LINEA; do
+			eval $LINEA
+		done
+
 		exit
 	;;
 	u)

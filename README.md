@@ -69,7 +69,7 @@ Linea de comandos para Bufanda Rosa.
 ~~~
 bufandarosa -c
 ~~~
-> terminal de Bufanda Rosa
+> terminal de Bufanda Rosa. `ctrl+c` o `ctrl+d` para cerra la terminal bufandarosa.
 
 ~~~
 echo "echo 'hola mundo' | pastie" | bufandarosa -c
@@ -80,13 +80,6 @@ echo "echo 'hola mundo' | pastie" | bufandarosa -c
 echo 'echo "hola" | cifrar clave | descifrar clave' | bufandarosa -c
 ~~~
 > cifra y descifra un mensaje con clave
-
-![Mensaje de texto](img/viagra.png)
-~~~
-echo "echo Hola mundo. Este mensaje intenta ser dificil de leer \
-por computadoras y facil para humanos | viagra | publicar" | bufandarosa -c 
-~~~
-> Ofuscado de texto usando pixels (estilo publicada de viagra)
 
 ![Mensaje de texto](img/qr.png)
 ~~~
@@ -99,6 +92,13 @@ echo "descarga https://raw.github.com/b4zz4/BufandaRosa/master/img/qr.png | desc
 | bufandarosa -c
 ~~~
 > Descarga la imagen del QR y la descifra con la clave `1234`
+
+![Mensaje de texto](img/viagra.png)
+~~~
+echo "echo Hola mundo. Este mensaje intenta ser dificil de leer \
+por computadoras y facil para humanos | viagra | publicar" | bufandarosa -c 
+~~~
+> Ofuscado de texto usando pixels (estilo publicada de viagra)
 
 ~~~
 echo ayuda | bufandarosa -c
