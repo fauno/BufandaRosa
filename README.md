@@ -84,7 +84,7 @@ echo 'echo "hola" | cifrar clave | descifrar clave' | bufandarosa -c
 ![Mensaje de texto](img/viagra.png)
 ~~~
 echo "echo Hola mundo. Este mensaje intenta ser dificil de leer \
-por computadoras y facil para humanos | viagra | publicar" | ./bufandarosa -c 
+por computadoras y facil para humanos | viagra | publicar" | bufandarosa -c 
 ~~~
 > Ofuscado de texto usando pixels (estilo publicada de viagra)
 
