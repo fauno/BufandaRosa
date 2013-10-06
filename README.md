@@ -81,10 +81,19 @@ echo 'echo "hola" | cifrar clave | descifrar clave' | bufandarosa -c
 ~~~
 > cifra y descifra un mensaje con clave
 
+![Mensaje de texto](img/viagra.png)
+
+echo "echo Hola mundo | viagra " | ./bufandarosa -c > img/viagra.png
+> Ofuscado de texto usando pixels (estilo publicada de viagra)
+
+
 ~~~
 echo ayuda | bufandarosa -c
 ~~~
 > ayuda de la versión de terminal
+
+
+
 
 =====
 

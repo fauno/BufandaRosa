@@ -96,6 +96,14 @@ function ofuscar {
 	sed 'y/abcdefghijklmnħopqrstuvwxyz1234567890/ɐß¢Ð€ƒ9ħ¡jĸ|MŋñøþqR§†µ^W×¥łı23456Ŧ89ø/'
 
 }
+function viagra {
+	# fuente al azar
+	FONT=`convert -list font | grep Font | cut -d":" -f2 | sed 's/\ //g' | uno`
+	# convierte el texto a imagen
+	cat /dev/stdin | col -b | expand \
+	| convert -size 400 +noise Impulse -pointsize $[$RANDOM%5+14] -font $FONT caption:@- -contrast -colors 6 -delete 1--1 -quality 0 -threshold 30% png:-
+}
+
 function cifrar_irc {
 	while read SALIDA; do
 		if [ "$(echo $SALIDA | grep -i '^privmsg ')" ]; then
@@ -128,7 +136,7 @@ function sock {
 }
 function proxy {
 	[ "$1" == "-h" ]&& echo 'levanta un proxy local, ejemplo `proxy puerto`' && exit
-	nc -l 127.0.0.1 $1
+	nc -l 127.0.0.1 $1 || nc -l $1
 }
 function irc {
 	[ "$1" == "-h" ]&& echo 'genera un proxy de un servidor de irc y cifra la conexion, ejemplo `irc irc.freenode.net 6697 clave 6667`' && exit
@@ -137,6 +145,7 @@ function irc {
 	mkfifo $MENSAJE 2> /dev/null
 	cat $MENSAJE | sock $1 $2 | descifrar_irc $3 | proxy $4 | cifrar_irc $2 > $MENSAJE
 }
+# http://www.imagemagick.org/Usage/transform/ mirar a este software
 function desesteganografia {
 	[ "$1" == "-h" ]&& echo 'muestra el mensaje dentro de una archivo o un QR, ejemplo desesteganografia clave imagen`' && exit
 	zbarimg --raw -q "$2" | descifrar "$1" || steghide extract -p "$1" -sf "$2" -xf -
@@ -145,6 +154,7 @@ function esteganografia {
 	[ "$1" == "-h" ]&& echo 'guarda un mensaje dentro de una archivo, ejemplo `echo 'hola' | esteganografia clave imagen`' && exit
 	steghide embed -ef - -p "$k" -cf "$cf"
 }
+# ---------------
 function descarga {
 	# me gustaria convertir esto en GET
 	[ "$1" == "-h" ]&& echo 'descarga archivos con Tor, ejemplo `descarga http://loquesea.org`'  && exit
@@ -442,8 +452,11 @@ case $MENU in
 		p=`clave $(pwgen -s -y -1 $[$RANDOM%10+6])` || exit
 		# puerto
 		puerto=`url "6667"` || exit
-		irc $SERVIDOR "$p" "$puerto" 2>&1| zenity  --window-icon=/usr/share/pixmaps/bufandarosa.png  --notification --listen
-		# nota necesita icono
+		while [ 1 ]; do
+			irc $SERVIDOR "$p" "$puerto" 2>&1| zenity  --window-icon=/usr/share/pixmaps/bufandarosa.png  --notification --listen
+			# nota necesita icono
+			sleep 1
+		done
 	;;
 	4 )
 		# Quitar metadatos
