@@ -53,7 +53,6 @@ function publicar {
 	else
 		f=$1
 	fi
-
 	# verificar si un gif, jpg, png tiene más de 3M subir a imgur
 
 	# excepcion si es un txt (md, markdown) o pdf
@@ -112,6 +111,7 @@ function qr {
 	f=`mktemp`
 	cat /dev/stdin > $f
 	qrencode "$f" -o -
+	borrar "$f"
 }
 
 function viagra {
