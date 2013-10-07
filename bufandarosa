@@ -352,7 +352,7 @@ function progreso {
 # -------------------------- programa ----------------------------------
 
 # ¿Que queres hacer?
-MENU=`echo  "Cifrar Descifrar Publicación_Anónima IRC_cifrado Quitar_metadatos Eliminar_archivos Ayuda" | opciones -t "Bufanda Rosa" -m "¿Que queres hacer?"`
+MENU=`echo  "Cifrar Descifrar Publicación_Anónima Mensaje_enrarecido IRC_cifrado Quitar_metadatos Eliminar_archivos Ayuda" | opciones -t "Bufanda Rosa" -m "¿Que queres hacer?"`
 
 case $MENU in
 	0 )
@@ -485,6 +485,14 @@ case $MENU in
 		mensaje | paste | progreso | mostrar
 	;;
 	3 )
+		# Mensaje enrarecido
+		f="`mktemp`.png"
+		# publicacion anonima
+		mensaje | viagra > $f || exit
+		xdg-open $f
+		echo $f | mostrar
+	;;
+	4 )
 		# proxy IRC cifrado - basado en el concepto de dirtirc
 		# elegis el servidor
 		SERVIDOR=`url "irc.freenode.net 6697" ` || exit
@@ -498,7 +506,7 @@ case $MENU in
 			sleep 1
 		done
 	;;
-	4 )
+	5 )
 		# Quitar metadatos
 		archivos  || exit | while read ARCHIVO; do
 			# falta quitar las caras
@@ -506,14 +514,14 @@ case $MENU in
 			metadatos "$ARCHIVO"
 		done | progreso
 	;;
-	5 )
+	6 )
 		# Eliminar archivos de modo seguro
 		archivos || exit | while read ARCHIVO; do
 			# borra el archivo para simpre
 			borrar "$ARCHIVO"
 		done | progreso
 	;;
-	6 )
+	7 )
 		echo -e "# Bufanda Rosa\n_No tengo nada que ocultar, pero sí mucho que proteger_\n\nhttps://github.com/b4zz4/BufandaRosa" | mostrar
 esac
 
