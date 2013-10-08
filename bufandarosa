@@ -116,12 +116,30 @@ function qr {
 
 function viagra {
 	[ "$1" == "-h" ]&& echo 'ofusca un mensaje usando pixel, ejemplo `echo "hola" | viagra > imagen.png`' && exit
+
 	# fuente al azar
 	FONT=`convert -list font | grep Font | cut -d":" -f2 | sed 's/\ //g' | uno`
+
+	# genera el QR para hacer la publicidad de Bufanda
+	# echo "Bufanda Rosa - http://br.sf.net" | qrencode  -i -s 1 -o /tmp/br.png
+
 	# convierte el texto a imagen
-	cat /dev/stdin | col -b | expand \
-	| convert -size 750 +noise Impulse -pointsize $[$RANDOM%5+14] -font $FONT caption:@- -contrast -colors 6 \
-	-delete 1--1 -quality 0 -threshold 30% png:-
+	while [ 1 ]; do
+		cat /dev/stdin | col -b | expand \
+		| convert -size 750 \
+		-pointsize $[$RANDOM%6+14] -font $FONT caption:@- \
+		-distort Arc  $[$RANDOM%9] \
+		-colors $[$RANDOM%10+8] \
+		+noise Impulse \
+		-delete 1--1 -quality 0 -bordercolor snow -border $[$RANDOM%7+3]x$[$RANDOM%7+3] \
+		-threshold $[$RANDOM%20+60]% \
+		-colors 1 \
+		-strip \
+		gif:- && break
+	done
+
+	# -gravity SouthEast /tmp/br.png -composite png:-
+	# -contrast 
 }
 
 function cifrar_irc {

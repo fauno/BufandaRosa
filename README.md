@@ -117,7 +117,8 @@ echo ayuda | bufandarosa -c
 * En IRC al enviar "\" no recibe nada, hay que cambiarlo por "\\\\"
 * Leer feed en búsqueda de mensajes cifrados
 * Cifrado para poner en una URL, ejemplo: `data:text/html;charset=utf-8,<script>response=prompt("","¿Cual es mi color favorito?"); desciframe ("base64", response)</script>`
-
+* Enviar GPG gráfica: `gpg --export -a bazza@riseup.net | qrencode -ivS -s 2 -m 1 -o gpg.png`
+  * con esto la idea seria enviar la llave gpg + un mensaje cifrado sobre una imagen linda, al comprartir las llaves de este modo podes coleccionarla y compartirlas con tus amigos sumando imagenes a sus llaveros
 
 # Wgetpaste
 
