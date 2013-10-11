@@ -116,7 +116,7 @@ echo ayuda | bufandarosa -c
 ~~~
 > ayuda de la versión de terminal
 
-## Bufanda Rosa en Bash
+### Bufanda Rosa en `Bash`
 
 ~~~
 echo 'eval "$(echo alias | bufandarosa -c)"' >> ~/.bashrc
