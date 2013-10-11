@@ -111,12 +111,17 @@ cat imagen.pong | despixelar
 ~~~
 > convierte la linea de color nuevamente en texto
 
-
-
 ~~~
 echo ayuda | bufandarosa -c
 ~~~
 > ayuda de la versión de terminal
+
+## Bufanda Rosa en Bash
+
+~~~
+echo 'eval "$(echo alias | bufandarosa -c)"' >> ~/.bashrc
+~~~
+> Agregar los comando de bufanda rosa a cada terminal
 
 =====
 
