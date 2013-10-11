@@ -34,14 +34,16 @@ function paste {
 }
 function tinyurl {
 	[ "$1" == "-h" ]&& echo 'publica un archivo o mensaje en tinyurl (tiene espacio limitado), ejemplo: echo "hola" | tinyurl ' && exit
-	descarga "https://tinyurl.com/create.php?url=data:text/html;charset=utf-8;base64,$1" \
+	[ "$1" == "" ] && BASE64=`cat /dev/stdin | base64 -w0`|| BASE64="$1"
+	MIME=`echo $BASE64 | base64 -d | file -i - | cut -d" " -f2 | sed 's/;//'`
+	descarga "https://tinyurl.com/create.php?url=data:$MIME;charset=utf-8;base64,$BASE64" \
 	| grep -o "https\?://[^\"']\+" | sed 's/[<|\ ].*$//g' | grep "//tinyurl.com/..*" |  sort -u
 }
 function publicar {
 	[ "$1" == "-h" ]&& echo 'envia un archivo a un servidor de archivos al azar usando tor, ejemplo: `publicar imagen.png uploadpie`' && exit
 
 	# elige una subidor al azar
-	OPCION=`[ ! "$2" == "" ] && echo $2 || echo "imgur uploadpie" | uno`
+	OPCION=`[ ! "$2" == "" ] && echo $2 || echo "uploadpie" | uno`
 	# genera el archivo basado en el standar imput y le genera una extension
 	if [ "$1" == "" ]; then
 		f=`mktemp`
@@ -65,9 +67,9 @@ function publicar {
 	# txt: uploadpie o paste (3 de 4)
 	[ "$(echo $f | grep "\.txt$")" ] && OPCION=`echo "paste paste paste uploadpie" | uno`
 
-	# imgur (gif, png, jpg)
-	[ "$OPCION" == "imgur" ] && proxychains curl -F "file=@$f" http://imgur.com/upload \
-	| sed 's/^.*,"hash":"/http:\/\/imgur.com\//g; s/".*$//g'
+	# imgur (gif, png, jpg) se puso la gorra imgur
+	#[ "$OPCION" == "imgur" ] && proxychains curl -F "file=@$f" http://imgur.com/upload \
+	#| sed 's/^.*,"hash":"/http:\/\/imgur.com\//g; s/".*$//g'
 
 	# uploadpie (3M gif, png, jpg, pdf & txt)
 	[ "$OPCION" == "uploadpie" ] && proxychains curl -F upload=1 -F "uploadedfile=@$f" -F expire=5 -# http://uploadpie.com/ \
@@ -164,13 +166,15 @@ function pixelar {
 	# codificar
 	COLORES=`cat /dev/stdin | gzip -c | base64 -w0`
 	ELEMENTOS=`echo $(($(echo "$COLORES" | wc -c)/3))`
+	# ELEMENTOS=`echo "sqrt($(echo $COLORES | wc -c)/3)" | bc -l | sed 's/\..*$//g'`
 	echo -e "P6\n$ELEMENTOS 1\n255\n$COLORES" | convert ppm:- png:-
 }
 
 function despixelar {
-	convert - ppm:- | sed -n '4,100p' | base64 -d 2> /dev/null | gzip -d
+	# descodificar
+	convert - -scale x1 ppm:- | sed -n '4,100p' | base64 -d 2> /dev/null | gzip -d
 }
-
+# ----------------------
 function cifrar_irc {
 	while read SALIDA; do
 		if [ "$(echo $SALIDA | grep -i '^privmsg ')" ]; then
@@ -240,7 +244,7 @@ function esteganografia {
 function descarga {
 	# me gustaria convertir esto en GET
 	[ "$1" == "-h" ]&& echo 'descarga archivos con Tor, ejemplo `descarga http://loquesea.org`'  && exit
-	proxychains wget "$1" "$2" -qO -
+	proxychains wget --no-check-certificate "$1" "$2" -qO -
 }
 function basura {
 	[ "$1" == "-h" ]&& echo "genera datos al azar" && exit
@@ -264,8 +268,7 @@ function progreso {
 while getopts chiu OPCION; do
         case $OPCION in
 	c)
-
-		cat /dev/stdin \
+		{ [ ! "$2" == "" ] && cat $2 || cat /dev/stdin; } \
 		| while read LINEA; do
 			eval $LINEA
 		done
@@ -467,7 +470,7 @@ case $MENU in
 			# genera el mensaje y lo muestra en base64
 			m=`echo "$ef" | cifrar "$k"  -w0`
 			# si no se puede genera la tinyurl prueba varias veces
-			u=`tinyurl "$m" | progreso || tinyurl "$m" | progreso || tinyurl "$m" | progreso || error "No se generó la tinyURL"`
+			u=` tinyurl "$m" | progreso || tinyurl "$m" | progreso || tinyurl "$m" | progreso || error "No se generó la tinyURL"`
 			# muestra el archivo o mensaje cifrado
 			echo $u | mostrar
 		;;
