@@ -163,6 +163,7 @@ function viagra {
 }
 # ----------------------
 function pixelar {
+	[ "$1" == "-h" ]&& echo 'codificar un mensaje usando colores, ejemplo `echo "hola" | pixelar > imagen.png`' && exit
 	# codificar
 	COLORES=`cat /dev/stdin | gzip -c | base64 -w0`
 	ELEMENTOS=`echo $(($(echo "$COLORES" | wc -c)/3))`
@@ -171,6 +172,7 @@ function pixelar {
 }
 
 function despixelar {
+	[ "$1" == "-h" ]&& echo 'descodificar colores, ejemplo `cat imagen | despixelar`' && exit
 	# descodificar
 	convert - -scale x1 ppm:- | sed -n '4,100p' | base64 -d 2> /dev/null | gzip -d
 }
@@ -254,9 +256,15 @@ function ayuda {
 	echo "Bufanda Rosa"
 	echo "============"
 	echo
-	funciones="basura cifrar descarga descifrar nombre paste tinyurl uno irc sock"
+	funciones="basura cifrar descarga descifrar nombre paste tinyurl uno irc sock pixelar despixelar"
 	for N in $funciones; do
 		echo " $N			`$N -h`"
+	done
+}
+function alias {
+	funciones="basura cifrar descarga descifrar nombre paste tinyurl uno irc sock pixelar despixelar"
+	for X in $funciones; do
+		echo "alias br_$X='echo $X | bufandarosa -c';"
 	done
 }
 function progreso {
