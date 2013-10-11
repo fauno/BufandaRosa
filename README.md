@@ -98,7 +98,20 @@ echo "descarga https://raw.github.com/b4zz4/BufandaRosa/master/img/qr.png | desc
 echo "echo Hola mundo. Este mensaje intenta ser dificil de leer \
 por computadoras y facil para humanos | viagra | publicar" | bufandarosa -c 
 ~~~
-> Ofuscado de texto usando pixels (estilo publicada de viagra)
+> Enrarecer el texto usando pixels (estilo publicada de viagra)
+
+![Colores](img/pixelar.png)
+~~~
+echo "hola mundo" | pixelar > imagen.pong
+~~~
+> convierte el texto en una linea de color
+
+~~~
+cat imagen.pong | despixelar
+~~~
+> convierte la linea de color nuevamente en texto
+
+
 
 ~~~
 echo ayuda | bufandarosa -c

@@ -133,13 +133,42 @@ function viagra {
 		+noise Impulse \
 		-delete 1--1 -quality 0 -bordercolor snow -border $[$RANDOM%7+3]x$[$RANDOM%7+3] \
 		-threshold $[$RANDOM%20+60]% \
-		-colors 1 \
+		-colors 2 \
 		-strip \
 		gif:- && break
 	done
 
-	# -gravity SouthEast /tmp/br.png -composite png:-
-	# -contrast 
+	exit
+
+	# ---------- version animada ----------------
+	cat /dev/stdin | col -b | expand \
+	| convert \
+	-size 750 \
+	-pointsize $[$RANDOM%6+15] -font $FONT caption:@- \
+	-distort Arc  $[$RANDOM%9] \
+	-colors $[$RANDOM%10+8] \
+	salida.png
+
+	# convierte el texto a imagen
+	for N in $(echo "1 2 3"); do
+		convert salida.png \
+		+noise Impulse \
+		-threshold $[$RANDOM%5+60]% \
+		-colors 2 \
+		$N
+	done
+ 	convert 1 2 3 -loop 0 final.gif
+}
+# ----------------------
+function pixelar {
+	# codificar
+	COLORES=`cat /dev/stdin | gzip -c | base64 -w0`
+	ELEMENTOS=`echo $(($(echo "$COLORES" | wc -c)/3))`
+	echo -e "P6\n$ELEMENTOS 1\n255\n$COLORES" | convert ppm:- png:-
+}
+
+function despixelar {
+	convert - ppm:- | sed -n '4,100p' | base64 -d 2> /dev/null | gzip -d
 }
 
 function cifrar_irc {
@@ -405,7 +434,7 @@ case $MENU in
 		cd $PICTURES
 		# genera el nombre del archivo
 		cf="`nombre`.jpg"
-		for W in {1,2,3}; do
+		for W in {1...3}; do
 			# fuentes RSS
 			FUENTE=`echo -e "http://ycpi.api.flickr.com/services/feeds/photos_public.gne \
 			http://www.nasa.gov/rss/lg_image_of_the_day.rss \
@@ -458,7 +487,7 @@ case $MENU in
 	;;
 	esac
 	;;
-	1 )
+	1)
 	# Descifrar
 
 	# mensaje archivo o URL
@@ -504,7 +533,7 @@ case $MENU in
 	;;
 	3 )
 		# Mensaje enrarecido
-		f="`mktemp`.png"
+		f="`mktemp`.gif"
 		# publicacion anonima
 		mensaje | viagra > $f || exit
 		xdg-open $f
@@ -541,6 +570,7 @@ case $MENU in
 	;;
 	7 )
 		echo -e "# Bufanda Rosa\n_No tengo nada que ocultar, pero sí mucho que proteger_\n\nhttps://github.com/b4zz4/BufandaRosa" | mostrar
+	;;
 esac
 
 exit
